@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class OrderCardController {
 
@@ -180,13 +181,19 @@ public class OrderCardController {
 
     private void openTicket(TicketOnOrder ticket) {
         try {
+
+
+            String uuid = ticket.getCode();
+            String qrPath = "qr_codes/" + uuid + ".png";
+            String barcodePath = "barcodes/" + uuid + ".png";
+
+            //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/StandardTicket.fxml"));
             Parent root = loader.load();
 
             TicketController ticketController = loader.getController();
-
-            String qrPath = "qr_codes/" + ticket.getCode() + ".png";
-            ticketController.setTicketData(ticket, qrPath);
+//            ticketController.setTicketData(ticket, qrPath);
+            ticketController.setTicketData(ticket, qrPath,barcodePath);
 
             Stage stage = new Stage();
             stage.setTitle("Print Ticket");
@@ -391,7 +398,8 @@ public class OrderCardController {
 
                 TicketController controller = loader.getController();
                 String qrPath = "qr_codes/" + ticket.getCode() + ".png";
-                controller.setTicketData(ticket, qrPath);
+                String barcodePath = "barcodes/" + ticket.getCode() + ".png";
+                controller.setTicketData(ticket, qrPath, barcodePath);
 
                 // Render the node (scene snapshot)
                 Scene tempScene = new Scene(root);

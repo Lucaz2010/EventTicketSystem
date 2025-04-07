@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.embed.swing.SwingFXUtils;
 import javax.imageio.ImageIO;
@@ -28,6 +30,7 @@ import java.io.File;
 public class TicketController {
 
 
+    public ImageView barCodeImageView;
     @FXML private Label lblEventName;
 //    @FXML private Label lblCustomerName;
     @FXML private Label lblDate;
@@ -35,9 +38,10 @@ public class TicketController {
     @FXML private Label lblPrice;
     @FXML private Label lblLocation;
     @FXML private Label lblQuantity;
-    @FXML private ImageView qrCodeImageView;
+    @FXML
+    private ImageView qrCodeImageView;
     @FXML Button btnPrintPDF;
-
+    @FXML private AnchorPane ticketpane;
 
 
     @FXML
@@ -45,7 +49,7 @@ public class TicketController {
 
         System.out.println("Super duper cool ticket displaying!");
     }
-    public void setTicketData(TicketOnOrder ticket, String qrFilePath) {
+    public void setTicketData(TicketOnOrder ticket, String qrFilePath, String barcodePath) {
 
         lblEventName.setText(ticket.getEventName());
 //        lblCustomerName.setText(ticket.getCustomerName());  Uncomment if adding the customer name is needed
@@ -68,6 +72,18 @@ public class TicketController {
         } else {
             System.out.println("QR code image not found at: " + qrFilePath);
         }
+
+        // Set barcode image
+        File barcodeFile  = new File(barcodePath);
+        if (barcodeFile .exists()) {
+            Image barcodeImage = new Image(barcodeFile .toURI().toString());
+            barCodeImageView.setImage(barcodeImage);
+
+            System.out.println("Barcode loaded from: " + barcodePath);
+
+        } else {
+            System.out.println("Barcode image not found at: " + barcodePath);
+        }
     }
     @FXML
     private void onPrintToPDFClick() {
@@ -85,13 +101,16 @@ public class TicketController {
 
             if (file == null) return;
 
-            // Snapshot the AnchorPane or qrCodeImageView depending on what you want
-            javafx.scene.image.WritableImage snapshot = qrCodeImageView.getScene().snapshot(null);
-
+            // takes "screenshot of the FXML <Achorpane>"
+            WritableImage snapshot = ticketpane.getScene().snapshot(null);
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
+
+
+            // Save snapshot to a temp file (for PDF use)
             File tempImage = File.createTempFile("ticket", ".png");
             ImageIO.write(bufferedImage, "png", tempImage);
-            // iText PDF logic
+
+            //Create  the PDF using iText
             Document document = new Document(PageSize.A4.rotate()); //newdoc + rotated
             PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();

@@ -1,7 +1,7 @@
 package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.be.TicketOnOrder;
-import easv.dk.eventticketsystem.bll.QRCodeManager;
+import easv.dk.eventticketsystem.bll.QRBarcodeManager;
 import easv.dk.eventticketsystem.gui.controllers.componentsControllers.OrderCardController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import javafx.fxml.FXML;
@@ -56,7 +56,7 @@ public class ManageOrdersController implements Initializable {
     public Button btnCreateNewOrder;
 
 
-    private final QRCodeManager QRCodeManager = new QRCodeManager();
+    private final QRBarcodeManager QRBarcodeManager = new QRBarcodeManager();
 
 
     private final EventTicketSystemModel eventTicketSystemModel = new EventTicketSystemModel();
