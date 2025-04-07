@@ -28,6 +28,12 @@ public class EventTicketSystemModel {
         return ticketManager;
     }
 
+    public void deleteTicket(String code) throws SQLException {
+        ticketManager.deleteTicket(code);
+    }
+    public void regenerateTicket(String code) throws SQLException, IOException {
+        ticketManager.regenerateTicket(code);
+    }
 
 
     /// Ticket Type functions
@@ -54,8 +60,6 @@ public class EventTicketSystemModel {
     }
 
 
-
-
     /// Orders functions
     private final OrderManager orderManager = new OrderManager();
 
@@ -75,6 +79,12 @@ public class EventTicketSystemModel {
         return false;
 
     }
+
+    public List<TicketOnOrder> getTicketByOrderId(int orderId){
+
+        return ticketOnOrderManager.getTicketByOrderId(orderId);
+    }
+
     public int getNextOrderId() {
         return orderManager.getNextOrderId();
     }

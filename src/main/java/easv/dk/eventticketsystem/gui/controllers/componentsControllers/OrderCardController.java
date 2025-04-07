@@ -1,10 +1,13 @@
 package easv.dk.eventticketsystem.gui.controllers.componentsControllers;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 import easv.dk.eventticketsystem.be.Customer;
 import easv.dk.eventticketsystem.be.TicketOnOrder;
+import easv.dk.eventticketsystem.bll.QRBarcodeManager;
 import easv.dk.eventticketsystem.bll.TicketManager;
 import easv.dk.eventticketsystem.gui.controllers.ManageOrdersController;
 import easv.dk.eventticketsystem.gui.controllers.TicketController;
@@ -183,9 +186,19 @@ public class OrderCardController {
         try {
 
 
-            String uuid = ticket.getCode();
-            String qrPath = "qr_codes/" + uuid + ".png";
-            String barcodePath = "barcodes/" + uuid + ".png";
+            String uniqueCode = ticket.getCode();
+            String qrPath = "qr_codes/" + uniqueCode + ".png";
+            String barcodePath = "barcodes/" + uniqueCode + ".png";
+
+            /// If order was moved from history to orders (status = "Confirmed" to "Pending") RegeneateQRBarcode file:
+            File qrFile = new File(qrPath);
+            File barcodeFile = new File(barcodePath);
+
+            if(!qrFile.exists()||!barcodeFile.exists()) {
+                System.out.println(" Regenerating missing QR/Barcode for ticket: " + uniqueCode);
+                model.regenerateTicket(ticket.getCode());
+
+            }
 
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/StandardTicket.fxml"));
@@ -210,6 +223,11 @@ public class OrderCardController {
 
     public void setModel(EventTicketSystemModel model) {
         this.model = model;
+    }
+
+    private void deleteFile(){
+
+
     }
 
 
@@ -244,10 +262,27 @@ public class OrderCardController {
 
                     // Should probably change the Ticket manager to model - lucas
                     TicketManager ticketManager = new TicketManager();
-                    ticketManager.deleteTicket(selectedTicket.getCode()); // ✅ delete from DB
 
-                    ticketsTable.getItems().remove(selectedTicket); // ✅ remove from UI
+                    /// Deletes from database and files
+                    model.deleteTicket(selectedTicket.getCode());
+                    /// Removes from UI
+                    ticketsTable.getItems().remove(selectedTicket); //
                     System.out.println("🗑️ Deleted ticket with code: " + selectedTicket.getCode());
+
+//                    String qrPath = System.getProperty("user.dir") + "/qr_codes/" + selectedTicket.getCode()+ ".png";
+//                    String barcodePath = System.getProperty("user.dir") + "/barcodes/" + selectedTicket.getCode()+ ".png";
+//
+//                    File qrFile = new File(qrPath);
+//                    File barcodeFile = new File (barcodePath);
+//                    if(qrFile.exists()){
+//                        qrFile.delete();
+//                    }
+//                    if(barcodeFile.exists()){
+//                        barcodeFile.delete();
+//                    }
+
+
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -378,17 +413,17 @@ public class OrderCardController {
     }
 
     private void generatePDF() {
-        //Chooses where to save the PDF = "Save as" function
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Saved all tickets to PDF from Order" + baseTicket.getOrderId());
+        fileChooser.setTitle("Save all tickets to PDF from Order " + baseTicket.getOrderId());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
 
         File file = fileChooser.showSaveDialog(null);
-
         if (file == null) return;
 
         try {
-            Document document = new Document(PageSize.A4.rotate());
+            // Set fixed ticket size (approx. 800x350 px)
+            Rectangle ticketSize = new Rectangle(800, 350);
+            Document document = new Document(ticketSize); // use this directly
             PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
@@ -401,31 +436,32 @@ public class OrderCardController {
                 String barcodePath = "barcodes/" + ticket.getCode() + ".png";
                 controller.setTicketData(ticket, qrPath, barcodePath);
 
-                // Render the node (scene snapshot)
-                Scene tempScene = new Scene(root);
+                // Create a temporary scene to render snapshot
+                Scene tempScene = new Scene(root, 800, 350); // enforce exact size
                 WritableImage snapshot = tempScene.snapshot(null);
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
 
+                // Save as temp image
                 File tempImage = File.createTempFile("ticket", ".png");
                 ImageIO.write(bufferedImage, "png", tempImage);
 
+                // Add to PDF
                 com.itextpdf.text.Image pdfImg = com.itextpdf.text.Image.getInstance(tempImage.getAbsolutePath());
-                pdfImg.scaleToFit(800, 600);
-                float x = (PageSize.A4.getHeight() - pdfImg.getScaledWidth()) / 2;
-                float y = (PageSize.A4.getWidth() - pdfImg.getScaledHeight()) / 2;
-                pdfImg.setAbsolutePosition(x, y);
+                pdfImg.scaleToFit(ticketSize.getWidth() - 40, ticketSize.getHeight() - 40); // leave margin
+                pdfImg.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER); // center on page
                 document.newPage();
                 document.add(pdfImg);
 
-                tempImage.delete(); // optional cleanup
+                tempImage.delete(); // cleanup
             }
 
             document.close();
             System.out.println("✅ All tickets exported to PDF: " + file.getAbsolutePath());
+
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("❌ Failed to export all tickets: " + e.getMessage());
         }
-    }
+    }   
 
 }

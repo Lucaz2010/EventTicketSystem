@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.nio.file.Files.delete;
+
 public class QRBarcodeManager {
 
 
@@ -57,6 +59,23 @@ public class QRBarcodeManager {
         }
 
         return uniqueCode; // return the string stored in Database
+    }
+
+    public static void deleteUUIDfiles(String uniqueCode){
+
+        String qrPath = System.getProperty("user.dir") + "/qr_codes/" + uniqueCode + ".png";
+        String barcodePath = System.getProperty("user.dir") + "/barcodes/" + uniqueCode + ".png";
+
+        File qrFile = new File(qrPath);
+        File barcodeFile = new File(barcodePath);
+
+        if (qrFile.exists()){
+            qrFile.delete();
+        }
+
+        if (barcodeFile.exists()){
+            barcodeFile.delete();
+        }
     }
 
 
@@ -106,9 +125,23 @@ public class QRBarcodeManager {
         MatrixToImageWriter.writeToPath(croppedMatrix, "PNG", path);
         }
 
+
+
+
+public static void regenerateQRCodeAndBarcode(String uniqueCode, int QRwidth, int QRheight, int barcodeWidth, int barcodeHeight) throws IOException {
+    String qrPath = System.getProperty("user.dir") + "/qr_codes/" + uniqueCode + ".png";
+    String barcodePath = System.getProperty("user.dir") + "/barcodes/" + uniqueCode + ".png";
+
+             try {
+        generateQRCode(uniqueCode, qrPath, QRwidth, QRheight);
+        generateBarcode(uniqueCode, barcodePath, barcodeWidth, barcodeHeight);
+        System.out.println("🔁 Regenerated QR and barcode for: " + uniqueCode);
+        } catch (WriterException e) {
+        throw new IOException("Failed to regenerate QR/barcode: " + e.getMessage(), e);
+        }
     }
 
-
+}
 
 
 
