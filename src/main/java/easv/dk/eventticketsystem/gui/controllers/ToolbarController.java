@@ -13,14 +13,17 @@ public class ToolbarController {
     private Label lblUserName;
 
     private ManageUsersController parentController;
+    private ManageEventsController2 eventParentController;
 
     public void setParentController(ManageUsersController parentController) {
         this.parentController = parentController;
     }
+    public void setEventParentController(ManageEventsController2 eventParentController) {
+        this.eventParentController = eventParentController;
+    }
 
     public void handleSearch(ActionEvent actionEvent) {
         String query = txtQuery.getText();
-
         if (query.isEmpty()) {
             AlertUtil.showWarningAlert("Error", "The query is empty");
             return;
@@ -28,6 +31,9 @@ public class ToolbarController {
         System.out.println("Searching for: " + query);
         if (parentController != null) {
             parentController.searchUsers(query);
+        }
+        if (eventParentController != null) {
+            eventParentController.searchEvent(query);
         }
     }
 

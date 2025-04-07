@@ -20,6 +20,7 @@ public class EventTicketSystemModel {
     private final ObservableList<Users> allUsers = FXCollections.observableArrayList();
     private final ObservableList<Event> allEvents = FXCollections.observableArrayList();
     private final ObservableList<Users> searchedUsers = FXCollections.observableArrayList();
+    private final ObservableList<Event> searchedEvent = FXCollections.observableArrayList();
 
     /// Ticket functions
     private final TicketManager ticketManager = new TicketManager();
@@ -141,7 +142,6 @@ public class EventTicketSystemModel {
 
     public void deleteEvent(Event event) throws IOException {
         eventManager.deleteEvent(event);
-
     }
 
     public void updateEvent(Event selectedEvent) throws IOException {
@@ -153,5 +153,12 @@ public class EventTicketSystemModel {
         List<Users> searchResults = usersManager.searchUsers(query);
         searchedUsers.setAll(searchResults);
         return searchedUsers;
+    }
+
+    /// Get ovservableList of searched event
+    public ObservableList<Event> getSearchedEvent(String query) throws IOException {
+        List<Event> searchResults = eventManager.searchEvent(query);
+        searchedEvent.setAll(searchResults);
+        return searchedEvent;
     }
 }

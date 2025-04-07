@@ -2,10 +2,13 @@ package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
+import easv.dk.eventticketsystem.be.Users;
 import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCard2Controller;
 import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EditWindowController;
 
+import easv.dk.eventticketsystem.gui.controllers.componentsControllers.UserCardController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,43 +27,52 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ManageEventsController2 implements Initializable {
-
     @FXML
-    public Button btnCreateNewEvent;
+    private Button btnCreateNewEvent;
     @FXML
-    public FlowPane eventCardPane;
+    private FlowPane eventCardPane;
+    @FXML
+    private AnchorPane toolbarContainer;
     @FXML
     private BorderPane eventPane;
 
+    private ToolbarController toolbarController;
     private static final EventTicketSystemModel model = new EventTicketSystemModel();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            // Manually load the toolbar FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/Toolbar.fxml"));
+            AnchorPane toolbar = loader.load();
+            toolbarController = loader.getController();
+            // Set the parent controller reference in the toolbar controller
+            toolbarController.setEventParentController(this);
+            // Place the loaded toolbar into the placeholder container
+            toolbarContainer.getChildren().setAll(toolbar);
             loadAllEvents();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /// use for loop to add all events by cards.
     public void loadAllEvents() throws IOException {
         eventCardPane.getChildren().clear();
         List<Event> eventList = model.getAllEvents();
         for (Event event : eventList) {
-            // Load the card component (EventCard.fxml) dynamically
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard2.fxml"));
-            AnchorPane card = loader.load();
-            // Get the controller of the card and pass the event data
-            EventCard2Controller cardController = loader.getController();
-            cardController.setParentController(this);
-            cardController.setEventData(event);
-            // Add the card to the FlowPane
-            eventCardPane.getChildren().add(card);
-            URL resource = getClass().getResource("/easv/dk/eventticketsystem/components/EventCard2.fxml");
-            if (resource == null) {
-                System.err.println("EventCard2.fxml resource not found!");
+            addEventCard(event);
             }
-        }
+    }
+
+    // load a single user card.
+    private void addEventCard(Event event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard2.fxml"));
+        AnchorPane userCard = loader.load();
+        EventCard2Controller cardController = loader.getController();
+        cardController.setParentController(this);
+        cardController.setEventData(event);
+        eventCardPane.getChildren().add(userCard);
     }
 
 //Opens window for create new event
@@ -73,11 +85,23 @@ public class ManageEventsController2 implements Initializable {
         CreateNewEventController createController = fxmlLoader.getController();
         createController.setParentController(this);
 
-
         Stage loginStage = new Stage();
         loginStage.setTitle("Create A New Event");
         loginStage.setScene(scene);
         loginStage.show();
+    }
+
+    /// Call from ToolbarController to update the view based on the search query.
+    public void searchEvent(String query) {
+        eventCardPane.getChildren().clear();
+        try {
+            ObservableList<Event> searchedEvent = model.getSearchedEvent(query);
+            for (Event event : searchedEvent) {
+                addEventCard(event);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

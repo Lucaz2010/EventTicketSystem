@@ -17,8 +17,6 @@
     <!-- Center region: contains the top bar and the main content -->
     <center>
         <VBox prefWidth="970.0" spacing="10.0">
-            <!-- Toolbar starts -->
-            <fx:include source="components/Toolbar.fxml" />
          <HBox alignment="CENTER">
             <children>
                <Label alignment="TOP_CENTER" contentDisplay="CENTER" text="Welcome to EASV Event Ticket System!" textAlignment="CENTER">
