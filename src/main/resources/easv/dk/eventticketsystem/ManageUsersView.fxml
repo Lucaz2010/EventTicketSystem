@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <BorderPane fx:id="usersPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.ManageUsersController">
     <!-- Left Sidebar -->
     <left>
@@ -16,7 +17,8 @@
     <center>
         <VBox alignment="TOP_CENTER" spacing="10" BorderPane.alignment="CENTER">
             <!-- Top: Toolbar -->
-            <fx:include source="components/Toolbar.fxml" />
+            <AnchorPane fx:id="toolbarContainer" />
+            <!--<fx:include source="components/Toolbar.fxml" fx:id="toolbarController"/>-->
 
             <!-- Container for the Create button aligned to right -->
             <HBox alignment="CENTER_RIGHT" fillHeight="true">

@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import java.sql.SQLException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventTicketSystemModel {
@@ -18,22 +19,17 @@ public class EventTicketSystemModel {
     private final ObservableList<TicketOnOrder> ticketOnOrders = FXCollections.observableArrayList();
     private final ObservableList<Users> allUsers = FXCollections.observableArrayList();
     private final ObservableList<Event> allEvents = FXCollections.observableArrayList();
-
-
+    private final ObservableList<Users> searchedUsers = FXCollections.observableArrayList();
 
     /// Ticket functions
-
     private final TicketManager ticketManager = new TicketManager();
     public TicketManager getTicketManager() {
         return ticketManager;
     }
 
-
-
     /// Ticket Type functions
     private final TicketTypeManager ticketTypeManager = new TicketTypeManager();
     private final ObservableList<TicketType> allTicketTypes = FXCollections.observableArrayList();
-    ;
 
     public void createTicketType(TicketType ticketType) {
         try {
@@ -53,9 +49,6 @@ public class EventTicketSystemModel {
         return allTicketTypes;
     }
 
-
-
-
     /// Orders functions
     private final OrderManager orderManager = new OrderManager();
 
@@ -70,11 +63,10 @@ public class EventTicketSystemModel {
             if (ticket.getOrderId() == orderId){
                 return  true;
             }
-
         }
         return false;
-
     }
+
     public int getNextOrderId() {
         return orderManager.getNextOrderId();
     }
@@ -98,7 +90,6 @@ public class EventTicketSystemModel {
     /// Customer functions
     private final CustomerManager customerManager = new CustomerManager();
 
-
     public int getOrCreateCustomerId(String name, String email) throws Exception {
         return customerManager.getOrCreateCustomerId(name, email);
     }
@@ -120,10 +111,6 @@ public class EventTicketSystemModel {
     }
 
     /// User functions
-
-
-
-
     public ObservableList<Users> getAllUsers() throws IOException {
         List<Users> usersList = usersManager.getAllUsers();
         allUsers.setAll(usersList);
@@ -141,6 +128,7 @@ public class EventTicketSystemModel {
     public void updateUsers(Users users) throws IOException {
         usersManager.updateUsers(users);
     }
+
     /// Event functions
     public ObservableList<Event> getAllEvents() throws IOException {
         List<Event> eventList = eventManager.getAllEvents();
@@ -158,5 +146,12 @@ public class EventTicketSystemModel {
 
     public void updateEvent(Event selectedEvent) throws IOException {
         eventManager.updateEvent(selectedEvent);
+    }
+
+    /// Get ovservableList of searched users
+    public ObservableList<Users> getSearchedUsers(String query) throws IOException {
+        List<Users> searchResults = usersManager.searchUsers(query);
+        searchedUsers.setAll(searchResults);
+        return searchedUsers;
     }
 }
