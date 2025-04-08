@@ -30,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderCardController {
@@ -109,9 +110,17 @@ public class OrderCardController {
         lblOrderNumber.setText("Order #" + baseTicket.getOrderId());
         txtCustomerName.setText(baseTicket.getCustomerName());
         txtCustomerEmail.setText(baseTicket.getCustomerEmail());
+/// gets all the ticktes and avoids adding a "fake ticket"
+        List<TicketOnOrder> realTickets = new ArrayList<>();
+        for (TicketOnOrder t : allTickets) {
+            if (t.getTicketId() != -1 && t.getCode() != null && !t.getCode().isBlank()) {
+                realTickets.add(t);
+            }
+        }
+        ticketsTable.getItems().setAll(realTickets);
 
-        ticketsTable.getItems().setAll(allTickets);
         configureTicketTableSizes();
+
 
         actionColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEventName()));
         ticketTypeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTicketType()));
@@ -216,6 +225,7 @@ public class OrderCardController {
             alert.showAndWait();
             return;
         }
+
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirm Deletion");
         confirmAlert.setHeaderText("Are you sure you want to delete this ticket?");
@@ -243,6 +253,8 @@ public class OrderCardController {
             }
         });
     }
+
+
 
     @FXML
     private void onAddTicketClicked() {
