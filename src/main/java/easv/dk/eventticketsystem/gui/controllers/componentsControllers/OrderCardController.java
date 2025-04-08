@@ -1,10 +1,13 @@
 package easv.dk.eventticketsystem.gui.controllers.componentsControllers;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 import easv.dk.eventticketsystem.be.Customer;
 import easv.dk.eventticketsystem.be.TicketOnOrder;
+import easv.dk.eventticketsystem.bll.QRBarcodeManager;
 import easv.dk.eventticketsystem.bll.TicketManager;
 import easv.dk.eventticketsystem.gui.controllers.ManageOrdersController;
 import easv.dk.eventticketsystem.gui.controllers.TicketController;
@@ -18,6 +21,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -26,12 +32,14 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class OrderCardController {
 
@@ -180,13 +188,29 @@ public class OrderCardController {
 
     private void openTicket(TicketOnOrder ticket) {
         try {
+
+
+            String uniqueCode = ticket.getCode();
+            String qrPath = "qr_codes/" + uniqueCode + ".png";
+            String barcodePath = "barcodes/" + uniqueCode + ".png";
+
+            /// If order was moved from history to orders (status = "Confirmed" to "Pending") RegeneateQRBarcode file:
+            File qrFile = new File(qrPath);
+            File barcodeFile = new File(barcodePath);
+
+            if(!qrFile.exists()||!barcodeFile.exists()) {
+                System.out.println(" Regenerating missing QR/Barcode for ticket: " + uniqueCode);
+                model.regenerateTicket(ticket.getCode());
+
+            }
+
+            //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/StandardTicket.fxml"));
             Parent root = loader.load();
 
             TicketController ticketController = loader.getController();
-
-            String qrPath = "qr_codes/" + ticket.getCode() + ".png";
-            ticketController.setTicketData(ticket, qrPath);
+//            ticketController.setTicketData(ticket, qrPath);
+            ticketController.setTicketData(ticket, qrPath,barcodePath);
 
             Stage stage = new Stage();
             stage.setTitle("Print Ticket");
@@ -203,6 +227,11 @@ public class OrderCardController {
 
     public void setModel(EventTicketSystemModel model) {
         this.model = model;
+    }
+
+    private void deleteFile(){
+
+
     }
 
 
@@ -237,10 +266,27 @@ public class OrderCardController {
 
                     // Should probably change the Ticket manager to model - lucas
                     TicketManager ticketManager = new TicketManager();
-                    ticketManager.deleteTicket(selectedTicket.getCode()); // ✅ delete from DB
 
-                    ticketsTable.getItems().remove(selectedTicket); // ✅ remove from UI
+                    /// Deletes from database and files
+                    model.deleteTicket(selectedTicket.getCode());
+                    /// Removes from UI
+                    ticketsTable.getItems().remove(selectedTicket); //
                     System.out.println("🗑️ Deleted ticket with code: " + selectedTicket.getCode());
+
+//                    String qrPath = System.getProperty("user.dir") + "/qr_codes/" + selectedTicket.getCode()+ ".png";
+//                    String barcodePath = System.getProperty("user.dir") + "/barcodes/" + selectedTicket.getCode()+ ".png";
+//
+//                    File qrFile = new File(qrPath);
+//                    File barcodeFile = new File (barcodePath);
+//                    if(qrFile.exists()){
+//                        qrFile.delete();
+//                    }
+//                    if(barcodeFile.exists()){
+//                        barcodeFile.delete();
+//                    }
+
+
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -371,17 +417,18 @@ public class OrderCardController {
     }
 
     private void generatePDF() {
-        //Chooses where to save the PDF = "Save as" function
+
+
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Saved all tickets to PDF from Order" + baseTicket.getOrderId());
+        fileChooser.setTitle("Save all tickets to PDF from Order " + baseTicket.getOrderId());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
 
         File file = fileChooser.showSaveDialog(null);
-
         if (file == null) return;
 
         try {
-            Document document = new Document(PageSize.A4.rotate());
+            Rectangle ticketSize = new Rectangle(950, 350);
+            Document document = new Document(ticketSize);
             PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
@@ -390,11 +437,15 @@ public class OrderCardController {
                 Parent root = loader.load();
 
                 TicketController controller = loader.getController();
+                controller.hidePrintButton();
                 String qrPath = "qr_codes/" + ticket.getCode() + ".png";
-                controller.setTicketData(ticket, qrPath);
+                String barcodePath = "barcodes/" + ticket.getCode() + ".png";
+                controller.setTicketData(ticket, qrPath, barcodePath);
 
-                // Render the node (scene snapshot)
-                Scene tempScene = new Scene(root);
+                // Force background color to white
+                Scene tempScene = new Scene(root, 950, 350);
+                tempScene.setFill(javafx.scene.paint.Color.WHITE); // <-- 💡 force white background
+
                 WritableImage snapshot = tempScene.snapshot(null);
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
 
@@ -402,22 +453,27 @@ public class OrderCardController {
                 ImageIO.write(bufferedImage, "png", tempImage);
 
                 com.itextpdf.text.Image pdfImg = com.itextpdf.text.Image.getInstance(tempImage.getAbsolutePath());
-                pdfImg.scaleToFit(800, 600);
-                float x = (PageSize.A4.getHeight() - pdfImg.getScaledWidth()) / 2;
-                float y = (PageSize.A4.getWidth() - pdfImg.getScaledHeight()) / 2;
-                pdfImg.setAbsolutePosition(x, y);
+                pdfImg.setAbsolutePosition(0, 0);
+                pdfImg.scaleToFit(ticketSize.getWidth(), ticketSize.getHeight());
                 document.newPage();
                 document.add(pdfImg);
 
-                tempImage.delete(); // optional cleanup
+                tempImage.delete();
             }
 
             document.close();
             System.out.println("✅ All tickets exported to PDF: " + file.getAbsolutePath());
+
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("❌ Failed to export all tickets: " + e.getMessage());
         }
     }
 
+
+
+
+
+
 }
+

@@ -12,4 +12,12 @@ public class TicketOnOrderManager {
     public List<TicketOnOrder> getAllOrderDetails() {
         return ticketOnOrderDAO.getAllOrderDetails();
     }
+
+    public List<TicketOnOrder> getTicketByOrderId(int orderId) {
+        return ticketOnOrderDAO.getTicketByOrderId(orderId);
+    }
+
+    public boolean orderHasTickets (int orderId){
+        return ticketOnOrderDAO.orderHasTickets(orderId);
+    }
 }

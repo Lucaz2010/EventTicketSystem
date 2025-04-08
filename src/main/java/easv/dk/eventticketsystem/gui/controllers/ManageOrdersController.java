@@ -1,7 +1,7 @@
 package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.be.TicketOnOrder;
-import easv.dk.eventticketsystem.bll.QRCodeManager;
+import easv.dk.eventticketsystem.bll.QRBarcodeManager;
 import easv.dk.eventticketsystem.gui.controllers.componentsControllers.OrderCardController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import javafx.fxml.FXML;
@@ -56,7 +56,7 @@ public class ManageOrdersController implements Initializable {
     public Button btnCreateNewOrder;
 
 
-    private final QRCodeManager QRCodeManager = new QRCodeManager();
+
 
 
     private final EventTicketSystemModel eventTicketSystemModel = new EventTicketSystemModel();
@@ -130,6 +130,7 @@ public class ManageOrdersController implements Initializable {
         }
     }
 
+
     public void setSelectedOrder(TicketOnOrder order, Parent cardNode) {
         if (selectedCardNode != null) {
             selectedCardNode.getStyleClass().remove("order-card-selected");
@@ -196,8 +197,11 @@ public class ManageOrdersController implements Initializable {
 
         // Changes status "Pending" to "Confirmed"
         eventTicketSystemModel.confirmOrder(selectedOrder.getOrderId());
-
-
+        /// Deletes the files of QRBarcode
+        List<TicketOnOrder> tickets = eventTicketSystemModel.getTicketByOrderId(selectedOrder.getOrderId());
+        for (TicketOnOrder ticket : tickets) {
+            QRBarcodeManager.deleteUUIDfiles(ticket.getCode());
+        }
 
         displayOrders();
         // Reset selected order
@@ -234,6 +238,12 @@ public class ManageOrdersController implements Initializable {
         confirmAlert.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
                 try {
+                    List<TicketOnOrder> tickets =eventTicketSystemModel.getTicketByOrderId(selectedOrder.getOrderId());
+                    /// Deletes the ticket files
+                    for (TicketOnOrder ticket : tickets) {
+                        QRBarcodeManager.deleteUUIDfiles(ticket.getCode());
+                    }
+
                     eventTicketSystemModel.deleteOrder(selectedOrder.getOrderId());
                     orderCardContainer.getChildren().remove(selectedCardNode);
 

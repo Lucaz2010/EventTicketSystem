@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface ITicketOnOrderDAO {
     List<TicketOnOrder> getAllOrderDetails();
+    List<TicketOnOrder> getTicketByOrderId(int orderId);
+
+    boolean orderHasTickets(int orderId);
 }

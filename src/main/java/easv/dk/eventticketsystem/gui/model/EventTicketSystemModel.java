@@ -28,6 +28,14 @@ public class EventTicketSystemModel {
         return ticketManager;
     }
 
+    public void deleteTicket(String code) throws SQLException {
+        ticketManager.deleteTicket(code);
+    }
+    public void regenerateTicket(String code) throws SQLException, IOException {
+        ticketManager.regenerateTicket(code);
+    }
+
+
     /// Ticket Type functions
     private final TicketTypeManager ticketTypeManager = new TicketTypeManager();
     private final ObservableList<TicketType> allTicketTypes = FXCollections.observableArrayList();
@@ -50,6 +58,7 @@ public class EventTicketSystemModel {
         return allTicketTypes;
     }
 
+
     /// Orders functions
     private final OrderManager orderManager = new OrderManager();
 
@@ -59,6 +68,12 @@ public class EventTicketSystemModel {
         return ticketOnOrders;
     }
     public boolean orderHasTickets (int orderId){
+        return ticketOnOrderManager.orderHasTickets(orderId);
+    }
+
+    public List<TicketOnOrder> getTicketByOrderId(int orderId){
+
+        return ticketOnOrderManager.getTicketByOrderId(orderId);
         List<TicketOnOrder> allTickets = getAllOrderDetails();
         for (TicketOnOrder ticket : allTickets){
             if (ticket.getOrderId() == orderId){
