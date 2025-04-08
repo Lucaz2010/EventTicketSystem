@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TicketOnOrderDAODB implements ITicketOnOrderDAO {
-    private DBConnection con = new DBConnection();
-
+    private final DBConnection con = new DBConnection();
 
     ///
     @Override
@@ -140,45 +139,43 @@ public class TicketOnOrderDAODB implements ITicketOnOrderDAO {
 
 
     public List<TicketOnOrder> getTicketByOrderId(int orderId){
-
         List<TicketOnOrder> tickets = new ArrayList<>();
 
         String sql = """
-                SELECT o.order_id, 
-                c.customer_name,
-                c.customer_email,
-                e.event_name,
-                e.start_datetime,
-                e.location,
-                t.quantity,
-                t.ticket_id AS ticket_id,
-                tt.type_name AS ticket_type,
-                tt.price AS ticket_price,
-                t.unique_code AS code
-                
-                FROM Orders o
-                JOIN Customer c ON o.customer_id = c.customer_id
-                LEFT JOIN Ticket t ON t.order_id = o.order_id
-                LEFT JOIN Event e ON t.event_id = e.event_id
-                LEFT JOIN Ticket_Type tt ON tt.ticket_type_id = t.ticket_type_id
-                WHERE o.order_id = ?
-                ORDER BY t.ticket_id DESC
-                """;
-
+            SELECT o.order_id, 
+                   c.customer_name,
+                   c.customer_email,
+                   e.event_name,
+                   e.start_datetime,
+                   e.location,
+                   t.quantity,
+                   t.ticket_id AS ticket_id,
+                   tt.type_name AS ticket_type,
+                   tt.price AS ticket_price,
+                   t.unique_code AS code
+            FROM Orders o
+            JOIN Customer c ON o.customer_id = c.customer_id
+            LEFT JOIN Ticket t ON t.order_id = o.order_id
+            LEFT JOIN Event e ON t.event_id = e.event_id
+            LEFT JOIN Ticket_Type tt ON tt.ticket_type_id = t.ticket_type_id
+            WHERE o.order_id = ?
+            ORDER BY t.ticket_id DESC
+            """;
 
         try (Connection connection = con.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)){
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setInt(1,orderId);
+            ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
+                int ticketId = rs.getInt("ticket_id");
+                if (rs.wasNull()) continue;
+
                 int orderId_db = rs.getInt("order_id");
                 String customerName = rs.getString("customer_name");
                 String customerEmail = rs.getString("customer_email");
                 String eventName = rs.getString("event_name");
-
-                int ticketId = rs.getInt("ticket_id");
                 String ticketType = rs.getString("ticket_type");
                 String code = rs.getString("code");
                 String startDateTime = rs.getString("start_datetime");
@@ -186,29 +183,48 @@ public class TicketOnOrderDAODB implements ITicketOnOrderDAO {
                 int quantity = rs.getInt("quantity");
                 double price = rs.getDouble("ticket_price");
 
-                LocalDateTime dateTime = LocalDateTime.parse(startDateTime.replace(" ", "T"));
-                String eventDate = dateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                String eventTime = dateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+                String eventDate = "";
+                String eventTime = "";
+
+                if (startDateTime != null && startDateTime.contains(" ")) {
+                    try {
+                        LocalDateTime dateTime = LocalDateTime.parse(startDateTime.replace(" ", "T"));
+                        eventDate = dateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        eventTime = dateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+                    } catch (Exception e) {
+                        System.err.println("⚠️ Failed to parse datetime for order ID " + orderId_db + ": " + startDateTime);
+                        eventDate = "(Invalid Date)";
+                        eventTime = "(Invalid Time)";
+                    }
+                } else {
+                    eventDate = "(No Date)";
+                    eventTime = "(No Time)";
+                }
 
                 TicketOnOrder ticketOnOrder = new TicketOnOrder(
                         orderId_db,
-                        customerName,customerEmail,eventName,ticketId,ticketType,code,eventDate,eventTime,location,quantity,price
-                        );
-
-
+                        customerName,
+                        customerEmail,
+                        eventName,
+                        ticketId,
+                        ticketType,
+                        code,
+                        eventDate,
+                        eventTime,
+                        location,
+                        quantity,
+                        price
+                );
 
                 tickets.add(ticketOnOrder);
             }
 
-
         } catch (SQLException e) {
-        e.printStackTrace();
-    }
+            e.printStackTrace();
+        }
 
         return tickets;
     }
-
-
 
 }
 
