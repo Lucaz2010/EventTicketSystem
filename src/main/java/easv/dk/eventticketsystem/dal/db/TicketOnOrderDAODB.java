@@ -136,7 +136,26 @@ public class TicketOnOrderDAODB implements ITicketOnOrderDAO {
 
         return orderList;
     }
+    public boolean orderHasTickets(int orderId) {
+        String sql = "SELECT COUNT(*) FROM Ticket WHERE order_id = ?";
 
+        try (Connection connection = con.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     public List<TicketOnOrder> getTicketByOrderId(int orderId){
         List<TicketOnOrder> tickets = new ArrayList<>();

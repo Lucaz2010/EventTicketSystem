@@ -2,9 +2,11 @@ package easv.dk.eventticketsystem.gui.controllers;
 
 
 import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
 import easv.dk.eventticketsystem.be.TicketOnOrder;
 
 import javafx.fxml.FXML;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -57,7 +59,7 @@ public class TicketController {
         lblDate.setText(ticket.getEventDate());
         lblTime.setText(ticket.getEventTime());
 
-        lblQuantity.setText("qty: " + ticket.getQuantity());
+        lblQuantity.setText("Qty: " + ticket.getQuantity());
         lblPrice.setText("DKK " + String.format("%.0f", ticket.getPrice()));
         lblLocation.setText(ticket.getLocation());
 
@@ -85,57 +87,59 @@ public class TicketController {
             System.out.println("Barcode image not found at: " + barcodePath);
         }
     }
+
+    public void hidePrintButton() {
+        btnPrintPDF.setVisible(false);
+    }
+
     @FXML
     private void onPrintToPDFClick() {
         try {
-            btnPrintPDF.setVisible(false); // Hide print button
+            btnPrintPDF.setVisible(false); // Hide button before snapshot
 
-            //Chooses where to save the PDF = "Save as" function
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Ticket PDF");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-
             File file = fileChooser.showSaveDialog(null);
-
-            System.out.println("✅ Ticket PDF generated!");
-
             if (file == null) return;
 
-            // takes "screenshot of the FXML <Achorpane>"
-            WritableImage snapshot = ticketpane.getScene().snapshot(null);
+            // Snapshot the AnchorPane using its current size
+            double paneWidth = ticketpane.getWidth();
+            double paneHeight = ticketpane.getHeight();
+
+            WritableImage snapshot = new WritableImage((int) paneWidth, (int) paneHeight);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setFill(javafx.scene.paint.Color.TRANSPARENT); // use transparent or Color.WHITE if needed
+            ticketpane.snapshot(params, snapshot);
+
+            // Convert JavaFX image to BufferedImage
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
-
-
-            // Save snapshot to a temp file (for PDF use)
             File tempImage = File.createTempFile("ticket", ".png");
             ImageIO.write(bufferedImage, "png", tempImage);
 
-            //Create  the PDF using iText
-            Document document = new Document(PageSize.A4.rotate()); //newdoc + rotated
+            // Use float cast for iText Rectangle
+            Rectangle pdfSize = new Rectangle((float) paneWidth, (float) paneHeight);
+            Document document = new Document(pdfSize);
             PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
-
             com.itextpdf.text.Image pdfImg = com.itextpdf.text.Image.getInstance(tempImage.getAbsolutePath());
-            pdfImg.scaleToFit(800, 600); // Set size of image inside pdf
-
-            // Centering logic
-            float x = (PageSize.A4.getHeight() - pdfImg.getScaledWidth()) / 2;
-            float y = (PageSize.A4.getWidth() - pdfImg.getScaledHeight()) / 2;
-            pdfImg.setAbsolutePosition(x, y);
+            pdfImg.setAbsolutePosition(0f, 0f);
+            pdfImg.scaleToFit((float) paneWidth, (float) paneHeight); // iText needs float
             document.add(pdfImg);
             document.close();
 
-            System.out.println("✅ Ticket exported to PDF: " + file.getAbsolutePath());
+            tempImage.delete(); // cleanup
 
+            System.out.println("✅ Ticket exported to PDF: " + file.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("❌ Failed to export PDF: " + e.getMessage());
-        }
-        finally {
-            btnPrintPDF.setVisible(true);
+        } finally {
+            btnPrintPDF.setVisible(true); // Show button again
         }
 
-    }
+            }
+
 
 }

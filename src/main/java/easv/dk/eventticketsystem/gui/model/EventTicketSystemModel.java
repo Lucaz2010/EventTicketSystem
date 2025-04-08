@@ -69,15 +69,7 @@ public class EventTicketSystemModel {
         return ticketOnOrders;
     }
     public boolean orderHasTickets (int orderId){
-        List<TicketOnOrder> allTickets = getAllOrderDetails();
-        for (TicketOnOrder ticket : allTickets){
-            if (ticket.getOrderId() == orderId){
-                return  true;
-            }
-
-        }
-        return false;
-
+        return ticketOnOrderManager.orderHasTickets(orderId);
     }
 
     public List<TicketOnOrder> getTicketByOrderId(int orderId){

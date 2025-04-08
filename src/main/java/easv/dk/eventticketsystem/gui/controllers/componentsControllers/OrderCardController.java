@@ -21,6 +21,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -29,6 +32,7 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -413,6 +417,8 @@ public class OrderCardController {
     }
 
     private void generatePDF() {
+
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save all tickets to PDF from Order " + baseTicket.getOrderId());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
@@ -421,9 +427,8 @@ public class OrderCardController {
         if (file == null) return;
 
         try {
-            // Set fixed ticket size (approx. 800x350 px)
-            Rectangle ticketSize = new Rectangle(800, 350);
-            Document document = new Document(ticketSize); // use this directly
+            Rectangle ticketSize = new Rectangle(950, 350);
+            Document document = new Document(ticketSize);
             PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
@@ -432,27 +437,28 @@ public class OrderCardController {
                 Parent root = loader.load();
 
                 TicketController controller = loader.getController();
+                controller.hidePrintButton();
                 String qrPath = "qr_codes/" + ticket.getCode() + ".png";
                 String barcodePath = "barcodes/" + ticket.getCode() + ".png";
                 controller.setTicketData(ticket, qrPath, barcodePath);
 
-                // Create a temporary scene to render snapshot
-                Scene tempScene = new Scene(root, 800, 350); // enforce exact size
+                // Force background color to white
+                Scene tempScene = new Scene(root, 950, 350);
+                tempScene.setFill(javafx.scene.paint.Color.WHITE); // <-- 💡 force white background
+
                 WritableImage snapshot = tempScene.snapshot(null);
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
 
-                // Save as temp image
                 File tempImage = File.createTempFile("ticket", ".png");
                 ImageIO.write(bufferedImage, "png", tempImage);
 
-                // Add to PDF
                 com.itextpdf.text.Image pdfImg = com.itextpdf.text.Image.getInstance(tempImage.getAbsolutePath());
-                pdfImg.scaleToFit(ticketSize.getWidth() - 40, ticketSize.getHeight() - 40); // leave margin
-                pdfImg.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER); // center on page
+                pdfImg.setAbsolutePosition(0, 0);
+                pdfImg.scaleToFit(ticketSize.getWidth(), ticketSize.getHeight());
                 document.newPage();
                 document.add(pdfImg);
 
-                tempImage.delete(); // cleanup
+                tempImage.delete();
             }
 
             document.close();
@@ -462,6 +468,12 @@ public class OrderCardController {
             e.printStackTrace();
             System.err.println("❌ Failed to export all tickets: " + e.getMessage());
         }
-    }   
+    }
+
+
+
+
+
 
 }
+
