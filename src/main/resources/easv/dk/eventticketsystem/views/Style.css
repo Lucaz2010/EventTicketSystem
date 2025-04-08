@@ -20,7 +20,7 @@
 }
 
 .loginBtn:hover {
-    -fx-background-color: #444;
+    -fx-background-color: #464646;
     -fx-cursor: hand;
     -fx-scale-x: 1.02;
     -fx-scale-y: 1.02;
