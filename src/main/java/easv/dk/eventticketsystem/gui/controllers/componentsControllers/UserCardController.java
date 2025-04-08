@@ -26,6 +26,10 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
 public class UserCardController {
@@ -64,9 +68,29 @@ public class UserCardController {
             avatar.setImage(new Image(is));
             //System.out.println("DEBUG: Loaded image from resource: " + imagePath);
         } else {
+            // Image is not found in classpath resources.
+            // Check if the image exists as a local file.
             File imageFile = new File(imagePath);
             if (imageFile.exists()) {
-                avatar.setImage(new Image(imageFile.toURI().toString()));
+                // Define a shared folder for images (adjust this path as needed).
+                Path sharedDir = Paths.get(System.getProperty("user.dir"), "shared", "userImages");
+                try {
+                    if (!Files.exists(sharedDir)) {
+                        Files.createDirectories(sharedDir);
+                    }
+                    // Determine the target path in the shared folder using the original file name.
+                    Path targetPath = sharedDir.resolve(imageFile.getName());
+                    // Copy the file to the shared folder, replacing any existing file.
+                    Files.copy(imageFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    // Optionally, update the user object with the new shared image path.
+                    // For example:
+                    // user.setUserImagePath("/shared/userImages/" + imageFile.getName());
+
+                    // Load the image from the shared directory.
+                    avatar.setImage(new Image(targetPath.toUri().toString()));
+                } catch (IOException e) {
+                    System.err.println("Error copying image file: " + e.getMessage());
+                }
             } else {
                 System.err.println("DEBUG: Resource not found: " + imagePath);
             }
