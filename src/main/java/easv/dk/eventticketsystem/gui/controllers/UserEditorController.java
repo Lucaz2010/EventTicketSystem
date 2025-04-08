@@ -79,7 +79,7 @@ public class UserEditorController implements Initializable {
         }
 
         // Check whether we are updating an existing user or creating a new one.
-        /*if (user != null && user.getUserId() > 0) {
+        if (user != null && user.getUserId() > 0) {
             // Editing an existing user: update its properties and call an update method.
             System.out.println("Updating existing user with ID: " + user.getUserId());
             user.setUserName(userName);
@@ -98,11 +98,7 @@ public class UserEditorController implements Initializable {
             String finalImgPath = (userImagePath != null && !userImagePath.isEmpty()) ? userImagePath : "";
             Users newUser = new Users(0, userName, finalImgPath, role, email, phone);
             model.createNewUsers(newUser);
-        }*/
-
-        String finalImgPath = (userImagePath != null && !userImagePath.isEmpty()) ? userImagePath : "";
-        Users newUser = new Users(0, userName, finalImgPath, role, email, phone);
-        model.createNewUsers(newUser);
+        }
 
         // Refresh the Manage Users view.
         if (manageUsersController != null) {
@@ -119,7 +115,7 @@ public class UserEditorController implements Initializable {
     public void onClickBrowseAvatar(MouseEvent actionEvent) {
         // Open a FileChooser to select an image
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Avatar Photo");
+        fileChooser.setTitle("Select User Photo");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
@@ -138,7 +134,7 @@ public class UserEditorController implements Initializable {
                 // Set the relative path (so all team members refer to the same resource)
                 userImagePath = "/userImg/" + selectedFile.getName();
                 lblUploadAvatar.setText("Selected: " + selectedFile.getName());
-                System.out.println("DEBUG: Copied avatar to: " + destFile.getAbsolutePath());
+                System.out.println("DEBUG: Copied user img to: " + destFile.getAbsolutePath());
             } catch (IOException ex) {
                 ex.printStackTrace();
                 AlertUtil.showErrorAlert("Error", "Failed to copy avatar image.");
@@ -150,22 +146,4 @@ public class UserEditorController implements Initializable {
         this.manageUsersController = manageUsersController;
     }
 
-    public void setUserData(Users user) {
-        this.user = user;
-        // Pre-populate the UI components with the user data
-        txtUsername.setText(user.getUserName());
-        txtPhone.setText(user.getUserPhone());
-        txtEmail.setText(user.getUserEmail());
-        comboRole.setValue(user.getRole());
-        String imagePath = user.getUserImagePath();  // Example: "/userImg/avatar.png"
-        if (imagePath != null && !imagePath.isEmpty()) {
-            InputStream is = getClass().getResourceAsStream(imagePath);
-            if (is != null) {
-                Image avatarImage = new Image(is);
-                avatarImageView.setImage(avatarImage);
-            } else {
-                System.err.println("Resource not found: " + imagePath);
-            }
-        }
-    }
 }

@@ -56,23 +56,6 @@ public class ManageUsersController implements Initializable {
     /// use for loop to add all users by cards.
     public void loadAllUsers() throws IOException {
         userCardPane.getChildren().clear();
-/*        List<Users> usersList = model.getAllUsers();
-        for (Users user : usersList) {
-            // Load the card component (UserCard.fxml) dynamically
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/UserCard.fxml"));
-            AnchorPane userCard = loader.load();
-            // Get the controller of the card and pass the user data
-            UserCardController cardController = loader.getController();
-            // Set the reference to the parent controller
-            cardController.setParentController(this);
-            cardController.setUserData(user);
-            // Add the card to the FlowPane
-            userCardPane.getChildren().add(userCard);
-            URL resource = getClass().getResource("/easv/dk/eventticketsystem/components/UserCard.fxml");
-            if (resource == null) {
-                System.err.println("UserCard.fxml resource not found!");
-            }
-        }*/
         // Load all users from the model and display them.
         List<Users> allUsers = model.getAllUsers();
         for (Users user : allUsers) {

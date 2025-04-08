@@ -60,39 +60,30 @@ public class UserCardController {
         lblUserEmail.setText(user.getUserEmail());
         lblRole.setText(user.getRole());
         lblUserPhone.setText(user.getUserPhone());
-        String imagePath = user.getUserImagePath(); // e.g., "/userImg/admin.jpg"
-        //System.out.println("DEBUG: Attempting to load image from resource: " + imagePath);
 
-        InputStream is = getClass().getResourceAsStream(imagePath);
-        if (is != null) {
-            avatar.setImage(new Image(is));
-            //System.out.println("DEBUG: Loaded image from resource: " + imagePath);
-        } else {
-            // Image is not found in classpath resources.
-            // Check if the image exists as a local file.
-            File imageFile = new File(imagePath);
-            if (imageFile.exists()) {
-                // Define a shared folder for images (adjust this path as needed).
-                Path sharedDir = Paths.get(System.getProperty("user.dir"), "shared", "userImages");
-                try {
-                    if (!Files.exists(sharedDir)) {
-                        Files.createDirectories(sharedDir);
-                    }
-                    // Determine the target path in the shared folder using the original file name.
-                    Path targetPath = sharedDir.resolve(imageFile.getName());
-                    // Copy the file to the shared folder, replacing any existing file.
-                    Files.copy(imageFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-                    // Optionally, update the user object with the new shared image path.
-                    // For example:
-                    // user.setUserImagePath("/shared/userImages/" + imageFile.getName());
-
-                    // Load the image from the shared directory.
-                    avatar.setImage(new Image(targetPath.toUri().toString()));
-                } catch (IOException e) {
-                    System.err.println("Error copying image file: " + e.getMessage());
-                }
+        String imagePath = user.getUserImagePath();  // e.g., "shared/userImages/newPerson.JPG" or "/userImg/Charlie.JPG"
+        if (imagePath != null && !imagePath.isEmpty()) {
+            // First try loading as a classpath resource.
+            InputStream is = getClass().getResourceAsStream(imagePath);
+            if (is != null) {
+                System.out.println("DEBUG: Loaded image from classpath resource: " + imagePath);
+                avatar.setImage(new Image(is));
             } else {
-                System.err.println("DEBUG: Resource not found: " + imagePath);
+                // Fallback: load from file system.
+                System.out.println("DEBUG: Resource not found in classpath: " + imagePath);
+                String workingDir = System.getProperty("user.dir");
+                System.out.println("DEBUG: Working directory: " + workingDir);
+
+                // Use the File constructor that takes a parent directory and a child path.
+                File imageFile = new File(workingDir, imagePath);
+                System.out.println("DEBUG: Constructed absolute image path: " + imageFile.getAbsolutePath());
+
+                if (imageFile.exists()) {
+                    System.out.println("DEBUG: Found file on disk: " + imageFile.getAbsolutePath());
+                    avatar.setImage(new Image(imageFile.toURI().toString()));
+                } else {
+                    System.err.println("DEBUG: File not found on disk: " + imageFile.getAbsolutePath());
+                }
             }
         }
     }
@@ -144,49 +135,42 @@ public class UserCardController {
         user.setUserPhone(lblUserPhone.getText());
         user.setRole(lblRole.getText());
 
+        // If a new image has been chosen, copy it to the shared folder and update the path.
         if (newUserImagePath != null && !newUserImagePath.isEmpty()) {
-            user.setUserImagePath(newUserImagePath);
-
-            // Load the image from the file system rather than via getResourceAsStream.
+            // Define the shared folder path (adjust as needed)
+            Path sharedDir = Paths.get(System.getProperty("user.dir"), "shared", "userImages");
+            if (!Files.exists(sharedDir)) {
+                Files.createDirectories(sharedDir);
+            }
+            // Create a File object from the newUserImagePath (this is the local absolute path)
             File imageFile = new File(newUserImagePath);
             if (imageFile.exists()) {
-                Image newImage = new Image(imageFile.toURI().toString());
-                avatar.setImage(newImage);
+                // Determine the target path in the shared folder using the original file name
+                Path targetPath = sharedDir.resolve(imageFile.getName());
+                // Copy the file to the shared folder, replacing any existing file
+                Files.copy(imageFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Build a shared relative path (e.g., "shared/userImages/filename.jpg")
+                String sharedPath = "shared" + File.separator + "userImages" + File.separator + imageFile.getName();
+                // Update the user's image path
+                user.setUserImagePath(sharedPath);
+
+                // Update the avatar ImageView immediately using the new shared path
+                avatar.setImage(new Image(targetPath.toUri().toString()));
             } else {
                 System.err.println("Image file not found: " + newUserImagePath);
             }
         }
+        // Update the user record in the database
         model.updateUsers(user);
 
+        // Refresh the Manage Users view
         if (manageUsersController != null) {
             manageUsersController.loadAllUsers();
             AlertUtil.showSuccessAlert("User Updated", "User information has been updated successfully.");
         } else {
             System.err.println("Parent controller is not set!");
         }
-
-        // Load the UserEditorView FXML file
-        /*FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/easv/dk/eventticketsystem/UserEditorView.fxml"));
-        Parent root = fxmlLoader.load();
-
-        // Get the UserEditorController instance from the loader
-        UserEditorController editorController = fxmlLoader.getController();
-        // Pass the selected user data to the editor controller
-        editorController.setUserData(user);
-        // pass the parent controller reference if needed
-        editorController.setParentController(manageUsersController);
-
-        // Create a new stage for the user editor
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Edit User");
-        stage.show();
-
-        if (manageUsersController != null) {
-            manageUsersController.loadAllUsers();
-        } else {
-            System.err.println("Parent controller is not set!");
-        }*/
     }
 
     public void onClickDeleteUser(ActionEvent actionEvent) throws IOException {
@@ -255,6 +239,8 @@ public class UserCardController {
                     Image newImage = new Image(file.toURI().toString());
                     avatar.setImage(newImage);
 
+                }else {
+                    System.err.println("Failed to copy the new image file.");
                 }
             }
         }
