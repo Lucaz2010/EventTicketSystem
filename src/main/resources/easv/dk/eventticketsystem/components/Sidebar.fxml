@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox alignment="TOP_CENTER" opacity="0.91" prefHeight="700.0" prefWidth="230.0" spacing="20" style="-fx-background-color: #222; -fx-padding: 15;" styleClass="sidebar" stylesheets="@../views/Style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.SidebarController">
+<VBox alignment="TOP_CENTER" opacity="0.91" prefHeight="700.0" prefWidth="230.0" spacing="20" style="-fx-background-color: #222; -fx-padding: 15;" styleClass="sidebar" stylesheets="@../views/Style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.SidebarController">
    <ImageView fitHeight="47.0" fitWidth="184.0" pickOnBounds="true" preserveRatio="true">
       <image>
          <Image url="@../views/images/EASYDVEST_negativ_lille.png" />
@@ -100,7 +100,7 @@
                         <Image url="@../views/images/ticket.png" />
                     </image>
                 </ImageView>
-                <Label prefHeight="20.0" prefWidth="41.0" text="Orders" textFill="WHITE" />
+                <Label prefHeight="20.0" prefWidth="109.0" text="Orders" textFill="WHITE" />
             <padding>
                <Insets left="5.0" />
             </padding>
