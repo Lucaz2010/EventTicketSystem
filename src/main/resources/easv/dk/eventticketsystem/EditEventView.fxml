@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
@@ -48,9 +47,9 @@
             <Label text="Date:" GridPane.rowIndex="2" />
             <DatePicker fx:id="editDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="txtLocation" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Label text="Assign:" GridPane.rowIndex="7" />
-            <ComboBox fx:id="comboAssign" prefWidth="150.0" promptText="Select a User" GridPane.columnIndex="1" GridPane.rowIndex="7" />
             <TextArea fx:id="txtAreaDescription" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Button fx:id="btnAssignUser" mnemonicParsing="false" onAction="#onClickAssignUsers" text="Click here to assign users..." GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <Label text="Assign Users:" GridPane.rowIndex="7" />
          </children>
          <columnConstraints>
             <ColumnConstraints />

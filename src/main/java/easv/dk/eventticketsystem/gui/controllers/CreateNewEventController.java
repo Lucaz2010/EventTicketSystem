@@ -57,8 +57,6 @@ public class CreateNewEventController implements Initializable {
     @FXML
     private ComboBox<String> createComboAssign;
 
-    private String price;
-    private String locationG;
     private String eventImagePath;
     private ManageEventsController2 manageEventsController2;
     private final EventTicketSystemModel model = new EventTicketSystemModel();

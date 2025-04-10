@@ -1,5 +1,6 @@
 package easv.dk.eventticketsystem.gui.controllers.componentsControllers;
 
+import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
 import easv.dk.eventticketsystem.be.Users;
 import easv.dk.eventticketsystem.bll.UsersManager;
@@ -10,7 +11,10 @@ import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import easv.dk.eventticketsystem.gui.util.AlertUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
@@ -31,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 
 public class EditWindowController implements Initializable {
@@ -82,12 +87,12 @@ public class EditWindowController implements Initializable {
             for (Users user : usersList) {
                 usernames.add(user.getUserName());
             }
-            comboAssign.getItems().clear();
-            comboAssign.getItems().addAll(usernames); // Add usernames to ComboBox
+//            comboAssign.getItems().clear();
+//            comboAssign.getItems().addAll(usernames); // Add usernames to ComboBox
 
-            if (!usernames.isEmpty()) {
-                comboAssign.getSelectionModel().clearSelection();
-            }
+//            if (!usernames.isEmpty()) {
+//                comboAssign.getSelectionModel().clearSelection();
+//            }
 
             if (currentEvent != null) {
                 loadEventData(currentEvent);  // Ensure assigned user is displayed
@@ -148,7 +153,7 @@ public class EditWindowController implements Initializable {
             String location = txtLocation.getText();
             String notes = txtAreaDescription.getText();
             String imgPath = lblUploadAvatar.getText();
-            String assignUser = comboAssign.getSelectionModel().getSelectedItem().toString();
+//            String assignUser = comboAssign.getSelectionModel().getSelectedItem().toString();
             if (currentEvent == null) {
                 AlertUtil.showErrorAlert("Error", "No event selected.");
                 return;
@@ -171,7 +176,7 @@ public class EditWindowController implements Initializable {
             selectedEvent.setLocation(location);
             selectedEvent.setNotes(notes);
             selectedEvent.setEventImagePath(imgPath);
-            selectedEvent.setAssignedUser(assignUser);
+//            selectedEvent.setAssignedUser(assignUser);
             // Call database update method
             model.updateEvent(selectedEvent);
 
@@ -200,14 +205,53 @@ public class EditWindowController implements Initializable {
             txtStartTime.setText(event.getStartDatetime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
             txtEndTime.setText(event.getEndDatetime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
 
-            comboAssign.getSelectionModel().clearSelection();
-
-            if (event.getAssignedUser() != null) {
-                comboAssign.getSelectionModel().select(event.getAssignedUser());
-            }
+//            comboAssign.getSelectionModel().clearSelection();
+//
+//            if (event.getAssignedUser() != null) {
+//                comboAssign.getSelectionModel().select(event.getAssignedUser());
+//            }
         }
     }
     public void setParentController(EventCard2Controller parentController) {
         this.parentController = parentController;
     }
+
+    public void onClickAssignUsers(ActionEvent actionEvent) {
+        loadAssignUsersWindow();
+    }
+
+    private void loadAssignUsersWindow() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/easv/dk/eventticketsystem/components/AssignUsers.fxml"));
+            Parent root = fxmlLoader.load();
+
+            AssignUsersController assignUsersController = fxmlLoader.getController();
+            assignUsersController.setParentController(this); // 'this' is the EditWindowController
+            assignUsersController.setEvent(currentEvent);
+
+            Stage stage = new Stage();
+            stage.setTitle("Assign Users");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace(); // IMPORTANT: This will show you where it's failing
+            AlertUtil.showErrorAlert("Error", "Could not load AssignUsers window:\n" + e.getMessage());
+        }
+    }
+
+    public void setAssignedUsers(Set<String> assignedUsers) {
+        if (currentEvent != null && !assignedUsers.isEmpty()) {
+            String joinedUsers = String.join(", ", assignedUsers);
+            currentEvent.setAssignedUser(joinedUsers);
+            try {
+                model.updateEvent(currentEvent);
+                //  comboAssign.getItems().add(joinedUsers);
+                //comboAssign.getSelectionModel().select(joinedUsers);
+            } catch (Exception e) {
+                e.printStackTrace();
+                AlertUtil.showErrorAlert("Error", "Failed to update assigned users.");
+            }
+        }
+    }
+
 }
