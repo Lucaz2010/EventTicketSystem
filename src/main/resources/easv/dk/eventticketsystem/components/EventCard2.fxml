@@ -61,16 +61,15 @@
       </HBox>
 
       <!-- PRICE (Icon + Label) -->
-      <HBox layoutX="37.0" layoutY="390.0" spacing="5" AnchorPane.leftAnchor="37.0">
+      <HBox layoutX="36.0" layoutY="394.0" prefHeight="47.0" prefWidth="206.0" spacing="5" AnchorPane.leftAnchor="37.0">
          <FontIcon iconColor="#000000" iconLiteral="bi-cash" iconSize="16" text="" />
-         <Label fx:id="lblAssignedUser" text="Assigned:">
+         <Label fx:id="lblAssignedUser" text="Assigned:" wrapText="true">
             <font>
                <Font size="14.0" />
             </font>
          </Label>
-         <Label fx:id="lblPersonAssigned" lineSpacing="5.0" />
+         <Label fx:id="lblPersonAssigned" alignment="TOP_LEFT" lineSpacing="5.0" prefHeight="43.0" prefWidth="121.0" wrapText="true" />
       </HBox>
-      <Button fx:id="btnInformation" layoutX="35.0" layoutY="415.0" mnemonicParsing="false" style="-fx-text-fill: #bbbbbb; -fx-background-color: transparent;" text="Click here for more information..." />
 
       <!-- ACTION BUTTONS (Edit & Delete) -->
       <HBox layoutX="175.0" layoutY="441.0" spacing="10" AnchorPane.leftAnchor="175.0">
