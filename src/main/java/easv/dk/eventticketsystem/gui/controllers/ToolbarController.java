@@ -3,14 +3,13 @@ package easv.dk.eventticketsystem.gui.controllers;
 import easv.dk.eventticketsystem.gui.util.AlertUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+
 import javafx.scene.control.TextField;
 
 public class ToolbarController {
     @FXML
     private TextField txtQuery;
-    @FXML
-    private Label lblUserName;
+
 
     private ManageUsersController parentController;
     private ManageEventsController eventParentController;

@@ -9,9 +9,25 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO implementation for TicketType.
+ *
+ * Responsible for low-level database operations related to ticket types.
+ * Used by the TicketTypeManager (BLL) to create and retrieve ticket types.
+ */
+
 public class TicketTypeDAODB implements ITicketTypeDAO {
 
     private final DBConnection con = new DBConnection();
+
+    /**
+     * Inserts a new ticket type into the database.
+     * Sets the generated ID back into the TicketType object.
+     *
+     * @param ticketType The TicketType to insert
+     * @return The same TicketType object with its ID populated
+     */
+
     @Override
     public TicketType createTicketType(TicketType ticketType) throws Exception {
         String sql = "INSERT INTO Ticket_Type (type_name, type_category, price) VALUES (?, ?, ?)";
@@ -28,6 +44,9 @@ public class TicketTypeDAODB implements ITicketTypeDAO {
         }
         return ticketType;
     }
+
+    /**
+     * Retrieves all ticket types from the database. */
 
     @Override
     public List<TicketType> getAllTicketTypes() throws Exception {

@@ -87,12 +87,12 @@
         </graphic>
     </Button>-->
 
-    <!-- Manager Orders Button -->
+    <!-- Manager Order Button -->
     <Button fx:id="btnManageOrders" onAction="#onManageOrdersClick" prefHeight="40.0" prefWidth="200.0" style="-fx-alignment: center-left;" styleClass="mainBtn" stylesheets="@../views/Style.css">
         <graphic>
 <!--            <HBox spacing="10">
                 <FontIcon iconColor="WHITE" iconLiteral="bi-tablet-landscape-fill" iconSize="20" />
-                <Label text="Orders" textFill="WHITE" />
+                <Label text="Order" textFill="WHITE" />
             </HBox>-->
             <HBox spacing="10">
                 <ImageView fitHeight="20.0" fitWidth="20" preserveRatio="true">

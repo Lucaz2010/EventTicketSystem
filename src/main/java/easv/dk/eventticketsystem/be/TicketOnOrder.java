@@ -15,8 +15,6 @@ public class TicketOnOrder {
     private double price;
 
 
-//    private int quantity;
-
     public TicketOnOrder(int orderId, String customerName, String customerEmail, String eventName, int ticketId, String ticketType, String code,String eventDate, String eventTime, String location, int quantity, double price) {
         this.orderId = orderId;
         this.customerName = customerName;
@@ -94,9 +92,6 @@ public class TicketOnOrder {
         return location;
     }
 
-//    public String getPrice() {
-//        return price;
-//    }
 
     @Override
     public String toString() {
@@ -111,7 +106,6 @@ public class TicketOnOrder {
                 ", eventDate='" + eventDate + '\'' +
                 ", eventTime='" + eventTime + '\'' +
                 ", location='" + location + '\'' +
-//                ", price='" + price + '\'' +
                 '}';
     }
 }

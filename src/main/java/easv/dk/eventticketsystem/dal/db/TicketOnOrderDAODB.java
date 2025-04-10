@@ -32,8 +32,7 @@ public class TicketOnOrderDAODB implements ITicketOnOrderDAO {
                     t.ticket_id AS ticket_id,
                     tt.type_name AS ticket_type,
                     tt.price AS ticket_price,
-                    t.unique_code AS code
-                   
+                    t.unique_code AS code   
                 FROM Orders o
                 JOIN Customer c ON o.customer_id = c.customer_id
                 LEFT JOIN Ticket t ON t.order_id = o.order_id
@@ -260,6 +259,6 @@ public class TicketOnOrderDAODB implements ITicketOnOrderDAO {
 //                    orderDetails.add(ticketOnOrder);
 //                } else{
 
-    ///  PRoblem: this old method bugs the UI since loading Orders that have tickets, conflicts with creating order since we want to insert a new customer name + email
+    ///  PRoblem: this old method bugs the UI since loading Order that have tickets, conflicts with creating order since we want to insert a new customer name + email
     /// When clicking save it checks if theres no ticket so it disappears.
 

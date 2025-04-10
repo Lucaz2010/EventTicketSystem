@@ -154,20 +154,11 @@ public class ManageOrdersController implements Initializable {
             OrderCardController controller = loader.getController();
 
 
-            /// conflincting methods -> had to delete
-            int newOrderId = eventTicketSystemModel.getNextOrderId();
-            /// conflincting methods -> had to delete
-//            /// Ticket id set to -1 to matcth with order card
-//            TicketOnOrder placeholderTicket = new TicketOnOrder(
-//                    newOrderId, "Customer Name", "email@example.com", "Event Placeholder",
-//                    -1, "Type", "CODE123", "DD/MM/YYYY", "14:00", "Esbjerg", 1,150);
 
             controller.setParentController(this);
             controller.setModel(eventTicketSystemModel);
             controller.setDataPlaceholder();
 
-            /// conflincting methods -> had to delete
-//            controller.setData(placeholderTicket, List.of(placeholderTicket));
             orderCardContainer.getChildren().add(card);
 
         } catch (IOException e) {

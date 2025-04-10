@@ -2,31 +2,79 @@ package easv.dk.eventticketsystem.gui.model;
 
 import easv.dk.eventticketsystem.be.*;
 import easv.dk.eventticketsystem.bll.*;
-import easv.dk.eventticketsystem.gui.controllers.ManageEditWindow;
-import easv.dk.eventticketsystem.dal.db.OrderDAODB;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.sql.SQLException;
 
 import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 
-public class EventTicketSystemModel {
-    private final TicketOnOrderManager ticketOnOrderManager = new TicketOnOrderManager();
-    private final UsersManager usersManager = new UsersManager();
-    private final EventManager eventManager = new EventManager();
-    private final ObservableList<TicketOnOrder> ticketOnOrders = FXCollections.observableArrayList();
-    private final ObservableList<Users> allUsers = FXCollections.observableArrayList();
-    private final ObservableList<Event> allEvents = FXCollections.observableArrayList();
-    private final ObservableList<Users> searchedUsers = FXCollections.observableArrayList();
-    private final ObservableList<Event> searchedEvent = FXCollections.observableArrayList();
+/**
+ * The main model class used by the GUI to interact with the business logic layer.
+ *
+ * Acts as a facade between controllers and the underlying managers (BLL),
+ * providing observable lists for UI binding and methods to perform system actions.
+ */
 
-    /// Ticket functions
-    private final TicketManager ticketManager = new TicketManager();
-    public TicketManager getTicketManager() {
-        return ticketManager;
+public class EventTicketSystemModel {
+
+
+    /// ---------------------- TicketOnOrder ----------------------///
+    private final TicketOnOrderManager ticketOnOrderManager = new TicketOnOrderManager();
+
+    private final ObservableList<TicketOnOrder> ticketOnOrders = FXCollections.observableArrayList();
+
+    public ObservableList<TicketOnOrder> getAllOrderDetails() {
+        List<TicketOnOrder> orderDetails = ticketOnOrderManager.getAllOrderDetails();
+        ticketOnOrders.setAll(orderDetails);
+        return ticketOnOrders;
     }
+
+    public List<TicketOnOrder> getTicketByOrderId(int orderId){
+
+        return ticketOnOrderManager.getTicketByOrderId(orderId);
+
+    }
+
+    public boolean orderHasTickets (int orderId){
+        return ticketOnOrderManager.orderHasTickets(orderId);
+    }
+
+    /// ---------------------- Order Management ----------------------///
+    private final OrderManager orderManager = new OrderManager();
+
+    public int createOrder(int customerId) throws Exception {
+        return orderManager.createOrder(customerId);
+    }
+    public void confirmOrder(int orderId) {
+        try {
+            orderManager.updateOrderStatus(orderId, "Confirmed");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteOrder(int orderId) {
+        try {
+            orderManager.deleteOrder(orderId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateOrderCustomer(int orderId, int customerId) {
+        try {
+            orderManager.updateOrderCustomer(orderId, customerId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /// ---------------------- Ticket Management ----------------------///
+    private final TicketManager ticketManager = new TicketManager();
+
 
     public void deleteTicket(String code) throws SQLException {
         ticketManager.deleteTicket(code);
@@ -35,8 +83,12 @@ public class EventTicketSystemModel {
         ticketManager.regenerateTicket(code);
     }
 
+    public TicketManager getTicketManager() {
+        return ticketManager;
+    }
 
-    /// Ticket Type functions
+    /// ---------------------- Ticket Type Management ----------------------///
+
     private final TicketTypeManager ticketTypeManager = new TicketTypeManager();
     private final ObservableList<TicketType> allTicketTypes = FXCollections.observableArrayList();
 
@@ -59,68 +111,31 @@ public class EventTicketSystemModel {
     }
 
 
-    /// Orders functions
-    private final OrderManager orderManager = new OrderManager();
 
-    public ObservableList<TicketOnOrder> getAllOrderDetails() {
-        List<TicketOnOrder> orderDetails = ticketOnOrderManager.getAllOrderDetails();
-        ticketOnOrders.setAll(orderDetails);
-        return ticketOnOrders;
-    }
-    public boolean orderHasTickets (int orderId){
-        return ticketOnOrderManager.orderHasTickets(orderId);
-    }
 
-    public List<TicketOnOrder> getTicketByOrderId(int orderId){
-
-        return ticketOnOrderManager.getTicketByOrderId(orderId);
-
-    }
-
-    public int getNextOrderId() {
-        return orderManager.getNextOrderId();
-    }
-
-    public void confirmOrder(int orderId) {
-        try {
-            orderManager.updateOrderStatus(orderId, "Confirmed");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteOrder(int orderId) {
-        try {
-            orderManager.deleteOrder(orderId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /// Customer functions
+    /// ---------------------- Customer Management ----------------------///
     private final CustomerManager customerManager = new CustomerManager();
 
     public int getOrCreateCustomerId(String name, String email) throws Exception {
         return customerManager.getOrCreateCustomerId(name, email);
     }
 
-    public int createOrder(int customerId) throws Exception {
-        return orderManager.createOrder(customerId);
-    }
 
-    public void updateOrderCustomer(int orderId, int customerId) {
-        try {
-            orderManager.updateOrderCustomer(orderId, customerId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
+
 
     public Customer getCustomerByEmail(String email) throws Exception {
         return customerManager.getCustomerByEmail(email);
     }
 
-    /// User functions
+    /// ---------------------- User Management ----------------------///
+
+
+    private final UsersManager usersManager = new UsersManager();
+    private final ObservableList<Users> allUsers = FXCollections.observableArrayList();
+    private final ObservableList<Users> searchedUsers = FXCollections.observableArrayList();
+
+
     public ObservableList<Users> getAllUsers() throws IOException {
         List<Users> usersList = usersManager.getAllUsers();
         allUsers.setAll(usersList);
@@ -139,7 +154,11 @@ public class EventTicketSystemModel {
         usersManager.updateUsers(users);
     }
 
-    /// Event functions
+    /// ---------------------- Event Management ---------------------- ///
+    private final EventManager eventManager = new EventManager();
+    private final ObservableList<Event> allEvents = FXCollections.observableArrayList();
+    private final ObservableList<Event> searchedEvent = FXCollections.observableArrayList();
+
     public ObservableList<Event> getAllEvents() throws IOException {
         List<Event> eventList = eventManager.getAllEvents();
         allEvents.setAll(eventList);
@@ -157,14 +176,14 @@ public class EventTicketSystemModel {
         eventManager.updateEvent(selectedEvent);
     }
 
-    /// Get ovservableList of searched users
+    // Get observableList of searched users
     public ObservableList<Users> getSearchedUsers(String query) throws IOException {
         List<Users> searchResults = usersManager.searchUsers(query);
         searchedUsers.setAll(searchResults);
         return searchedUsers;
     }
 
-    /// Get ovservableList of searched event
+    // Get observableList of searched event
     public ObservableList<Event> getSearchedEvent(String query) throws IOException {
         List<Event> searchResults = eventManager.searchEvent(query);
         searchedEvent.setAll(searchResults);

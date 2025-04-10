@@ -1,10 +1,5 @@
 package easv.dk.eventticketsystem.be;
 
-import easv.dk.eventticketsystem.dal.IUsersDAO;
-
-import java.io.IOException;
-import java.util.List;
-
 public class Users {
     private int userId;
     private String userName;

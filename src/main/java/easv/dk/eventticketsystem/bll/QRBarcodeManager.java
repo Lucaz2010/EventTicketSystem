@@ -18,11 +18,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.nio.file.Files.delete;
+
 
 public class QRBarcodeManager {
 
-
+    /**
+     * Generates a random UUID (without dashes), then creates and saves:
+     * - a QR code (2D) as PNG in /qr_codes/
+     * - a barcode (1D, Code 128) as PNG in /barcodes/
+     *
+     * @return the unique code (UUID) used in both QR and barcode, to be stored in the database.
+     */
 
     public static String generateAndSaveQRCodeAndBarcode(int QRwidth, int QRheight,int barcodeWidth,int barcodeHeight) throws IOException {
 
@@ -45,7 +51,7 @@ public class QRBarcodeManager {
         /// Instantiates the barcode path
         String barcodePath = barcodeDirectory + uniqueCode + ".png";
 
-
+        // Generate both QR and barcode
         try {
             generateQRCode(uniqueCode, qrPath, QRwidth, QRheight);
             System.out.println("Saving QR to: " + qrPath);
@@ -80,6 +86,11 @@ public class QRBarcodeManager {
 
 
 
+    /**
+     * Generates a barcode (1D, Code 128) with no margin and scales it to the specified size.
+     * The image is cropped to remove excess whitespace and resized to match desired dimensions.
+     */
+
     public static void generateQRCode(String data, String qrPath, int QRwidth, int QRheight) throws WriterException, IOException {
 
         /// Removes white border
@@ -99,10 +110,10 @@ public class QRBarcodeManager {
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.MARGIN, 0);
 
-        // Step 1: Generate original matrix
+
         BitMatrix matrix = new Code128Writer().encode(data, BarcodeFormat.CODE_128, barcodeWidth, barcodeHeight, hints);
 
-        // Step 2: Crop to remove white padding
+      // Removes excessive borders
         int[] rect = matrix.getEnclosingRectangle(); // [x, y, width, height]
         BitMatrix croppedMatrix = new BitMatrix(rect[2], rect[3]);
         for (int y = 0; y < rect[3]; y++) {
@@ -113,7 +124,6 @@ public class QRBarcodeManager {
             }
         }
 
-        // Step 3: Resize cropped matrix to target size
         BufferedImage croppedImage = MatrixToImageWriter.toBufferedImage(croppedMatrix);
         BufferedImage finalImage = new BufferedImage(barcodeWidth, barcodeHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = finalImage.createGraphics();
@@ -126,7 +136,11 @@ public class QRBarcodeManager {
         }
 
 
-
+    /**
+     * Re-generates both the QR code and barcode image files for a given UUID string.
+     * Useful after deleting image files but keeping the code in the database.
+     * Useful also if we need to load "Confirmed" orders in the future
+     */
 
 public static void regenerateQRCodeAndBarcode(String uniqueCode, int QRwidth, int QRheight, int barcodeWidth, int barcodeHeight) throws IOException {
     String qrPath = System.getProperty("user.dir") + "/qr_codes/" + uniqueCode + ".png";

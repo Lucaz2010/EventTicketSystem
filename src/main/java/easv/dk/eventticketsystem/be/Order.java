@@ -3,7 +3,7 @@ package easv.dk.eventticketsystem.be;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Orders {
+public class Order {
     private final int id;
     private int customerId;
     private int eventId;
@@ -11,7 +11,7 @@ public class Orders {
     private String status;
     private List<Ticket> tickets;
 
-    public Orders(int id, int customerId, int eventId, LocalDate orderDate, String status, List<Ticket> tickets) {
+    public Order(int id, int customerId, int eventId, LocalDate orderDate, String status, List<Ticket> tickets) {
         this.id = id;
         this.customerId = customerId;
         this.eventId = eventId;

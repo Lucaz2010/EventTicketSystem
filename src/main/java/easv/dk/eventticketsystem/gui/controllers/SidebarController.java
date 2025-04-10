@@ -32,7 +32,7 @@ public class SidebarController implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("ManageOrdersView.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage loginStage = new Stage();
-        loginStage.setTitle("Orders Management");
+        loginStage.setTitle("Order Management");
         loginStage.setScene(scene);
         loginStage.show();
     }
