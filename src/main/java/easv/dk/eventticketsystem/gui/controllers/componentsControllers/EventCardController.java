@@ -2,9 +2,7 @@ package easv.dk.eventticketsystem.gui.controllers.componentsControllers;
 
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
-import easv.dk.eventticketsystem.gui.controllers.ManageEditWindow;
-import easv.dk.eventticketsystem.gui.controllers.ManageEventsController2;
-import easv.dk.eventticketsystem.gui.controllers.ManageUsersController;
+import easv.dk.eventticketsystem.gui.controllers.ManageEventsController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import easv.dk.eventticketsystem.gui.util.AlertUtil;
 import javafx.event.ActionEvent;
@@ -12,22 +10,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class EventCard2Controller {
+public class EventCardController {
     public AnchorPane eventPane;
     @FXML
     private ImageView eventImage;
@@ -54,7 +47,7 @@ public class EventCard2Controller {
 
     private final EventTicketSystemModel model = new EventTicketSystemModel();
 
-    private ManageEventsController2  manageEventsController;
+    private ManageEventsController manageEventsController;
 
     public void setEventData(Event event) {
         this.event = event;
@@ -143,7 +136,7 @@ public class EventCard2Controller {
         }
     }
 
-    public void setParentController(ManageEventsController2 manageEventsController) {
+    public void setParentController(ManageEventsController manageEventsController) {
         this.manageEventsController = manageEventsController;
        // System.out.println("Parent controller set to " + this.manageEventsController);
     }

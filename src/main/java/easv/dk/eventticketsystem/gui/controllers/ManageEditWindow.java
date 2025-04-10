@@ -2,7 +2,7 @@ package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
-import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCard2Controller;
+import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -69,15 +69,15 @@ public class ManageEditWindow implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard.fxml"));
                 AnchorPane card = loader.load();
 
-                EventCard2Controller cardController = loader.getController();
+                EventCardController cardController = loader.getController();
                 if (cardController != null) {
                     cardController.setEventData(event);
                 } else {
-                    System.out.println("ERROR: EventCard2Controller is NULL!");
+                    System.out.println("ERROR: EventCardController is NULL!");
                 }
                 eventCardPane.getChildren().add(card);
             } catch (IOException ex) {
-                System.out.println("ERROR: Failed to load EventCard2Controller!.fxml");
+                System.out.println("ERROR: Failed to load EventCardController!.fxml");
                 ex.printStackTrace();
             }
         }

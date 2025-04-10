@@ -4,9 +4,6 @@ import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
 import easv.dk.eventticketsystem.be.Users;
 import easv.dk.eventticketsystem.bll.UsersManager;
-import easv.dk.eventticketsystem.dal.db.UsersDAODB;
-import easv.dk.eventticketsystem.gui.controllers.ManageEditWindow;
-import easv.dk.eventticketsystem.gui.controllers.ManageEventsController2;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import easv.dk.eventticketsystem.gui.util.AlertUtil;
 import javafx.event.ActionEvent;
@@ -17,7 +14,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -67,7 +63,7 @@ public class EditWindowController implements Initializable {
 
     private final EventTicketSystemModel model = new EventTicketSystemModel();
 
-    private EventCard2Controller parentController;
+    private EventCardController parentController;
 
     private String eventImagePath;
 
@@ -212,7 +208,7 @@ public class EditWindowController implements Initializable {
 //            }
         }
     }
-    public void setParentController(EventCard2Controller parentController) {
+    public void setParentController(EventCardController parentController) {
         this.parentController = parentController;
     }
 

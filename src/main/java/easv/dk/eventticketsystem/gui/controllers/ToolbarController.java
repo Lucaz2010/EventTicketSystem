@@ -13,12 +13,12 @@ public class ToolbarController {
     private Label lblUserName;
 
     private ManageUsersController parentController;
-    private ManageEventsController2 eventParentController;
+    private ManageEventsController eventParentController;
 
     public void setParentController(ManageUsersController parentController) {
         this.parentController = parentController;
     }
-    public void setEventParentController(ManageEventsController2 eventParentController) {
+    public void setEventParentController(ManageEventsController eventParentController) {
         this.eventParentController = eventParentController;
     }
 

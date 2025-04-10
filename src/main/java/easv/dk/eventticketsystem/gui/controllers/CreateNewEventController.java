@@ -58,7 +58,7 @@ public class CreateNewEventController implements Initializable {
     private ComboBox<String> createComboAssign;
 
     private String eventImagePath;
-    private ManageEventsController2 manageEventsController2;
+    private ManageEventsController manageEventsController;
     private final EventTicketSystemModel model = new EventTicketSystemModel();
     private Event event;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");;
@@ -170,8 +170,8 @@ public class CreateNewEventController implements Initializable {
                     assignUser
             );
             model.createNewEvent(newEvent);
-            if (manageEventsController2 != null) {
-                manageEventsController2.loadAllEvents();
+            if (manageEventsController != null) {
+                manageEventsController.loadAllEvents();
             }
 
             ((Stage) btnCreate.getScene().getWindow()).close();
@@ -181,7 +181,7 @@ public class CreateNewEventController implements Initializable {
         }
     }
 
-    public void setParentController(ManageEventsController2 manageEventsController2) {
-        this.manageEventsController2 = manageEventsController2;
+    public void setParentController(ManageEventsController manageEventsController) {
+        this.manageEventsController = manageEventsController;
     }
 }

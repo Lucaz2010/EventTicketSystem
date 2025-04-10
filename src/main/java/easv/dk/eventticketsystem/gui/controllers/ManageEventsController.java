@@ -2,7 +2,7 @@ package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
-import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCard2Controller;
+import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController;
 
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import javafx.collections.ObservableList;
@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ManageEventsController2 implements Initializable {
+public class ManageEventsController implements Initializable {
     @FXML
     private Button btnCreateNewEvent;
     @FXML
@@ -65,7 +65,7 @@ public class ManageEventsController2 implements Initializable {
     private void addEventCard(Event event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard.fxml"));
         AnchorPane userCard = loader.load();
-        EventCard2Controller cardController = loader.getController();
+        EventCardController cardController = loader.getController();
         cardController.setParentController(this);
         cardController.setEventData(event);
         eventCardPane.getChildren().add(userCard);
