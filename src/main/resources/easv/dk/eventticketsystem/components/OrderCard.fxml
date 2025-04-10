@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <?import javafx.scene.control.TextField?>
@@ -19,7 +19,7 @@
     </padding>
 
     <children>
-        <VBox fx:id="cardRoot" alignment="CENTER_LEFT" layoutX="24.0" layoutY="23.0"  prefHeight="239.0" prefWidth="361.0" spacing="5" style="-fx-padding: 10" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="18.0">
+        <VBox alignment="CENTER_LEFT" layoutX="24.0" layoutY="23.0"  prefHeight="239.0" prefWidth="361.0" spacing="5" style="-fx-padding: 10" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="18.0">
 
             <!-- Header -->
             <Label fx:id="lblOrderNumber" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Order #001" />
@@ -45,20 +45,20 @@
 
             <!-- Action Buttons -->
             <HBox alignment="CENTER_LEFT" spacing="6">
-                <Button fx:id="printOrderButton" onAction="#onPrintOrderClicked" style="-fx-background-color: transparent;">
+                <Button  onAction="#onPrintOrderClicked" style="-fx-background-color: transparent;">
                     <graphic><FontIcon iconColor="BLACK" iconLiteral="bi-printer-fill" iconSize="20" /></graphic>
                 </Button>
-                <Button fx:id="emailTicketsButton" style="-fx-background-color: transparent;">
+                <Button  style="-fx-background-color: transparent;">
                     <graphic><FontIcon iconColor="BLACK" iconLiteral="bi-envelope-fill" iconSize="20" /></graphic>
                 </Button>
                 <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="addTicketButton" onAction="#onAddTicketClicked" style="-fx-background-color: transparent;">
+                <Button  onAction="#onAddTicketClicked" style="-fx-background-color: transparent;">
                     <graphic><FontIcon iconColor="#ffbc3d" iconLiteral="bi-plus-circle-fill" iconSize="20" /></graphic>
                 </Button>
                 <Button fx:id="editOrderButton" onAction="#onEditOrderClicked" style="-fx-background-color: transparent;">
                     <graphic><FontIcon iconColor="#009640" iconLiteral="bi-pencil-fill" iconSize="20" /></graphic>
                 </Button>
-                <Button fx:id="deleteTicketButton" onAction="#onDeleteClicked" style="-fx-background-color: transparent;">
+                <Button  onAction="#onDeleteClicked" style="-fx-background-color: transparent;">
                     <graphic><FontIcon iconColor="#c00d0d" iconLiteral="bi-trash-fill" iconSize="20" /></graphic>
                 </Button>
             </HBox>

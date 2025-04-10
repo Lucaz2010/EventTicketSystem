@@ -1,14 +1,10 @@
 package easv.dk.eventticketsystem.gui.controllers.componentsControllers;
 
 import com.itextpdf.text.Document;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 import easv.dk.eventticketsystem.be.Customer;
 import easv.dk.eventticketsystem.be.TicketOnOrder;
-import easv.dk.eventticketsystem.bll.QRBarcodeManager;
-import easv.dk.eventticketsystem.bll.TicketManager;
 import easv.dk.eventticketsystem.gui.controllers.ManageOrdersController;
 import easv.dk.eventticketsystem.gui.controllers.TicketController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
@@ -26,39 +22,25 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
-
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 public class OrderCardController {
 
-
-    @FXML
-    private Button deleteTicketButton;
-    @FXML
-    private Button addTicketButton;
-    @FXML
-    private VBox cardRoot;
     @FXML
     private AnchorPane containerRoot;
     @FXML
     private Label lblOrderNumber;
 
-    @FXML
-    private Label lblCustomerName;
-    @FXML
-    public Label lblCustomerEmail;
     @FXML
     private TextField txtCustomerName;
     @FXML
@@ -74,15 +56,8 @@ public class OrderCardController {
     private TableColumn<TicketOnOrder, Integer> quantityColumn;
 
     @FXML
-    private Button printOrderButton;
-    @FXML
-    private Button emailTicketsButton;
-
-    @FXML
     private Button editOrderButton;
 
-    @FXML
-    private Button deleteOrderButton;
     private boolean isEditing = false;
 
     private ManageOrdersController parentController;
@@ -97,6 +72,7 @@ public class OrderCardController {
         containerRoot.getStyleClass().add("order-card");
         System.out.println("✅ OrderCardController initialized: " + this);
 
+        // Handle double-click on row to open ticket
         ticketsTable.setRowFactory(tv -> {
             TableRow<TicketOnOrder> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -118,7 +94,7 @@ public class OrderCardController {
         lblOrderNumber.setText("Order #" + baseTicket.getOrderId());
         txtCustomerName.setText(baseTicket.getCustomerName());
         txtCustomerEmail.setText(baseTicket.getCustomerEmail());
-/// gets all the ticktes and avoids adding a "fake ticket"
+        /// gets all the ticktes and avoids adding a "fake ticket"
         List<TicketOnOrder> realTickets = new ArrayList<>();
         for (TicketOnOrder t : allTickets) {
             if (t.getTicketId() != -1 && t.getCode() != null && !t.getCode().isBlank()) {
@@ -172,10 +148,14 @@ public class OrderCardController {
         }
     }
 
+    /**
+     * Displays a placeholder order when creating a new one.
+     */
+
     public void setDataPlaceholder() {
-        int fakeOrderId = -1; // Mark it as "not saved yet"
+        int placeHolderOrderId = -1; // Mark it as "not saved yet"
         baseTicket = new TicketOnOrder(
-                fakeOrderId,
+                placeHolderOrderId,
                 "", "", // name and email left blank
                 "", 0, "", "", "", "", "", 0, 0.0
         );
@@ -185,6 +165,10 @@ public class OrderCardController {
         ticketsTable.getItems().clear();
         configureTicketTableSizes();
     }
+    /**
+     * Opens a ticket preview in a new window.
+     *
+     */
 
     private void openTicket(TicketOnOrder ticket) {
         try {
@@ -209,7 +193,7 @@ public class OrderCardController {
             Parent root = loader.load();
 
             TicketController ticketController = loader.getController();
-//            ticketController.setTicketData(ticket, qrPath);
+;
             ticketController.setTicketData(ticket, qrPath,barcodePath);
 
             Stage stage = new Stage();
@@ -242,6 +226,10 @@ public class OrderCardController {
         }
     }
 
+    /**
+     * Deletes selected ticket from the system.
+     */
+
     @FXML
     private void onDeleteClicked() {
         TicketOnOrder selectedTicket = ticketsTable.getSelectionModel().getSelectedItem();
@@ -264,28 +252,12 @@ public class OrderCardController {
             if (result == ButtonType.OK) {
                 try {
 
-                    // Should probably change the Ticket manager to model - lucas
-                    TicketManager ticketManager = new TicketManager();
 
                     /// Deletes from database and files
                     model.deleteTicket(selectedTicket.getCode());
                     /// Removes from UI
                     ticketsTable.getItems().remove(selectedTicket); //
                     System.out.println("🗑️ Deleted ticket with code: " + selectedTicket.getCode());
-
-//                    String qrPath = System.getProperty("user.dir") + "/qr_codes/" + selectedTicket.getCode()+ ".png";
-//                    String barcodePath = System.getProperty("user.dir") + "/barcodes/" + selectedTicket.getCode()+ ".png";
-//
-//                    File qrFile = new File(qrPath);
-//                    File barcodeFile = new File (barcodePath);
-//                    if(qrFile.exists()){
-//                        qrFile.delete();
-//                    }
-//                    if(barcodeFile.exists()){
-//                        barcodeFile.delete();
-//                    }
-
-
 
 
                 } catch (Exception e) {
@@ -300,7 +272,9 @@ public class OrderCardController {
         });
     }
 
-
+    /**
+     * Opens the "Add Ticket" window for this order.
+     */
 
     @FXML
     private void onAddTicketClicked() {
@@ -328,11 +302,14 @@ public class OrderCardController {
             alert.showAndWait();
         }
     }
+    /**
+     * Handles editing/saving order customer name and email.
+     */
 
     @FXML
     private void onEditOrderClicked() {
         if (!isEditing) {
-            /// Makes the button to Edit
+            /// Sets the button to Edit
             isEditing = true;
 
             txtCustomerName.setEditable(true);
@@ -407,17 +384,21 @@ public class OrderCardController {
         }
     }
 
+    /**
+     * Exports all tickets in the order to a single PDF.
+     */
+
     @FXML
     private void onPrintOrderClicked() {
-
         System.out.println("✅ Ticket PDF generated!");
         generatePDF();
-
-
     }
 
-    private void generatePDF() {
+    /**
+     * Generates a multi-page PDF with visual snapshots of each ticket.
+     */
 
+    private void generatePDF() {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save all tickets to PDF from Order " + baseTicket.getOrderId());
@@ -427,6 +408,8 @@ public class OrderCardController {
         if (file == null) return;
 
         try {
+            // Set custom PDF page size matching ticket layout
+
             Rectangle ticketSize = new Rectangle(950, 350);
             Document document = new Document(ticketSize);
             PdfWriter.getInstance(document, new FileOutputStream(file));
@@ -435,19 +418,22 @@ public class OrderCardController {
             for (TicketOnOrder ticket : ticketList) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/StandardTicket.fxml"));
                 Parent root = loader.load();
-
+                /// Setup ticket data (including QR/barcode image paths)
                 TicketController controller = loader.getController();
                 controller.hidePrintButton();
                 String qrPath = "qr_codes/" + ticket.getCode() + ".png";
                 String barcodePath = "barcodes/" + ticket.getCode() + ".png";
                 controller.setTicketData(ticket, qrPath, barcodePath);
 
-                // Force background color to white
+                // Force background color to white (method not fully functional)
                 Scene tempScene = new Scene(root, 950, 350);
-                tempScene.setFill(javafx.scene.paint.Color.WHITE); // <-- 💡 force white background
+                tempScene.setFill(javafx.scene.paint.Color.WHITE);
+
 
                 WritableImage snapshot = tempScene.snapshot(null);
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(snapshot, null);
+
+                // Save the snapshot as a temporary PNG image
 
                 File tempImage = File.createTempFile("ticket", ".png");
                 ImageIO.write(bufferedImage, "png", tempImage);
@@ -455,7 +441,10 @@ public class OrderCardController {
                 com.itextpdf.text.Image pdfImg = com.itextpdf.text.Image.getInstance(tempImage.getAbsolutePath());
                 pdfImg.setAbsolutePosition(0, 0);
                 pdfImg.scaleToFit(ticketSize.getWidth(), ticketSize.getHeight());
+                // Create a new page for each ticket
                 document.newPage();
+                // Add the ticket image
+
                 document.add(pdfImg);
 
                 tempImage.delete();

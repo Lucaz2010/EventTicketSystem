@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="ordersPane" prefHeight="700.0" prefWidth="1200.0" stylesheets="@/easv/dk/eventticketsystem/views/CardOrder.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.ManageOrdersController">
+<BorderPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@/easv/dk/eventticketsystem/views/CardOrder.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.ManageOrdersController">
 
     <!-- Sidebar -->
     <left>
@@ -28,10 +28,10 @@
                     <Insets right="20" /> <!-- Adjust right value as needed -->
                 </VBox.margin>
 
-                <Button fx:id="btnCreateNewOrder" onAction="#onClickAddOrder" style="-fx-background-color: transparent; -fx-border-color: #009640; -fx-text-fill: #009640; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5 15;" text="Create New Order" />
+                <Button onAction="#onClickAddOrder" style="-fx-background-color: transparent; -fx-border-color: #009640; -fx-text-fill: #009640; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5 15;" text="Create New Order" />
 
-                <Button fx:id="btnConfirmOrder" onAction="#onClickConfirmOrder" style="-fx-background-color: transparent; -fx-border-color: #0078D4; -fx-text-fill: #0078D4; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5 15;" text="Confirm Order" />
-            <Button fx:id="btnDeleteOrder" onAction="#onClickDeleteOrder" style="-fx-background-color: transparent; -fx-border-color: #D32F2F; -fx-text-fill: #D32F2F; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5 15;" text="Delete Order" />
+                <Button  onAction="#onClickConfirmOrder" style="-fx-background-color: transparent; -fx-border-color: #0078D4; -fx-text-fill: #0078D4; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5 15;" text="Confirm Order" />
+            <Button onAction="#onClickDeleteOrder" style="-fx-background-color: transparent; -fx-border-color: #D32F2F; -fx-text-fill: #D32F2F; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 5 15;" text="Delete Order" />
             </HBox>
 
             <!-- Scrollable Content -->

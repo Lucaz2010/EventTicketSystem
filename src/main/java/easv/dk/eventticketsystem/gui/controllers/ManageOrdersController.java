@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
@@ -18,49 +17,15 @@ import java.util.*;
 
 public class ManageOrdersController implements Initializable {
 
-    public BorderPane ordersPane;
-    public ScrollPane scrollPane;
-    public Button btnConfirmOrder;
-    public Button btnDeleteOrder;
-    @FXML
-    private FlowPane orderCardContainer;
-    @FXML
-    private TableColumn<TicketOnOrder, String> colCustomerEmail;
-    @FXML
-    private TableColumn<TicketOnOrder, Integer> colCode;
 
-    @FXML
-    private TableView<TicketOnOrder> lstTicketOnOrder;
-
-    @FXML
-    private TableColumn<TicketOnOrder, Integer> colOrderId;
-
-    @FXML
-    private TableColumn<TicketOnOrder, String> colCustomerName;
-
-    @FXML
-    private TableColumn<TicketOnOrder, String> colEventName;
-//    @FXML
-//    private TableColumn colTicketQty;
-
-    @FXML
-    private TableColumn<TicketOnOrder, Integer>colTicketId;
-    @FXML
-    private TableColumn<TicketOnOrder, String>colTicketType;
-    private TicketOnOrder selectedOrder;
-
-    private Parent selectedCardNode;
-
-
-    @FXML
-    public Button btnCreateNewOrder;
-
-
-
+    @FXML private ScrollPane scrollPane;
+    @FXML private FlowPane orderCardContainer;
+    @FXML private TicketOnOrder selectedOrder;
+    @FXML private Parent selectedCardNode;
 
 
     private final EventTicketSystemModel eventTicketSystemModel = new EventTicketSystemModel();
-    private List<TicketOnOrder> ticketOnOrder;
+
 
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -71,6 +36,11 @@ public class ManageOrdersController implements Initializable {
         displayOrders();
     }
 
+    /**
+     * Loads all pending orders from the system and displays them as cards.
+     * Each order is grouped by its order ID and shown in its own FXML component.
+     */
+
     public void displayOrders() {
         orderCardContainer.getChildren().clear();
         // Dynamically adjust wrap length to match current width
@@ -80,13 +50,13 @@ public class ManageOrdersController implements Initializable {
         });
 
         List<TicketOnOrder> tickets = eventTicketSystemModel.getAllOrderDetails();
-/// Groups tickets with Order
+/// Groups tickets by their orderId
         Map<Integer, List<TicketOnOrder>> groupedOrders = new HashMap<>();
         for (TicketOnOrder ticket : tickets) {
             int orderId = ticket.getOrderId();
             groupedOrders.computeIfAbsent(orderId, k -> new ArrayList<>()).add(ticket);
         }
-
+// Load and display each order as a separate card component in the UI
         for (Map.Entry<Integer, List<TicketOnOrder>> entry : groupedOrders.entrySet()) {
             List<TicketOnOrder> ticketList = entry.getValue();
             for (TicketOnOrder t : ticketList) {
@@ -100,7 +70,7 @@ public class ManageOrdersController implements Initializable {
                 }
             }
 
-// If still null, just use the first one (probably ticketless but we still need name/email/orderId)
+        // If still null, just use the first one (probably ticketless but we still need name/email/orderId)
             if (baseTicket == null && !ticketList.isEmpty()) {
                 baseTicket = ticketList.get(0);
             }
@@ -130,13 +100,19 @@ public class ManageOrdersController implements Initializable {
         }
     }
 
+    /**
+     * Highlights the selected order visually and stores a reference.
+     */
 
     public void setSelectedOrder(TicketOnOrder order, Parent cardNode) {
+
+        // Deselect previously selected card
+
         if (selectedCardNode != null) {
             selectedCardNode.getStyleClass().remove("order-card-selected");
             selectedCardNode.getStyleClass().add("order-card"); // return it to base style
         }
-
+        // Apply highlight selected card
         selectedCardNode = cardNode;
         selectedCardNode.getStyleClass().remove("order-card"); // remove base style
         selectedCardNode.getStyleClass().add("order-card-selected"); // add selected
@@ -145,6 +121,11 @@ public class ManageOrdersController implements Initializable {
         System.out.println("📌 Selected order #" + order.getOrderId());
     }
 
+
+    /**
+     * Creates a new empty order card in the UI.
+     */
+
     @FXML
     private void onClickAddOrder() {
         try {
@@ -152,8 +133,6 @@ public class ManageOrdersController implements Initializable {
             Parent card = loader.load();
 
             OrderCardController controller = loader.getController();
-
-
 
             controller.setParentController(this);
             controller.setModel(eventTicketSystemModel);
@@ -165,6 +144,11 @@ public class ManageOrdersController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Confirms an order by marking it as "Confirmed" and deleting QR/barcode files.
+     */
+
     @FXML
     private void onClickConfirmOrder() {
         if (selectedOrder == null) {
@@ -208,6 +192,10 @@ public class ManageOrdersController implements Initializable {
     }
 
 
+    /**
+     * Deletes a selected order and all associated ticket files.
+     */
+
     @FXML
     private void onClickDeleteOrder() {
 
@@ -225,17 +213,18 @@ public class ManageOrdersController implements Initializable {
         confirmAlert.setHeaderText("Are you sure you want to delete this order?");
         confirmAlert.setContentText("Order ID: " + selectedOrder.getOrderId());
 
-        ///  TODO maybe change this Lambda
+
         confirmAlert.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
                 try {
                     List<TicketOnOrder> tickets =eventTicketSystemModel.getTicketByOrderId(selectedOrder.getOrderId());
-                    /// Deletes the ticket files
+                    /// Deletes the ticket QR/barcode files
                     for (TicketOnOrder ticket : tickets) {
                         QRBarcodeManager.deleteUUIDfiles(ticket.getCode());
                     }
-
+                    // Delete from database
                     eventTicketSystemModel.deleteOrder(selectedOrder.getOrderId());
+                    // Remove UI card
                     orderCardContainer.getChildren().remove(selectedCardNode);
 
                     System.out.println("🗑️ Deleted order ID: " + selectedOrder.getOrderId());

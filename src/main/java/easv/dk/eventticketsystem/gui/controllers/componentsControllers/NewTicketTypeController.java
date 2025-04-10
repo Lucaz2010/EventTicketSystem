@@ -17,7 +17,7 @@ public class NewTicketTypeController {
     @FXML private TextField txtTicketTypeName;
     @FXML private ComboBox<String> comboAssign; // for "Normal", "Voucher"
     @FXML private TextField txtPrice;
-    @FXML private Button btnSaveChanges;
+
     @FXML
     private Button btnCancel;
 

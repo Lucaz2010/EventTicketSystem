@@ -1,18 +1,13 @@
 package easv.dk.eventticketsystem.gui.controllers;
 
-
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import easv.dk.eventticketsystem.be.TicketOnOrder;
-
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -22,19 +17,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import com.itextpdf.text.Document;
-import javafx.scene.image.Image;
-
 import com.itextpdf.text.pdf.PdfWriter;
-
-import java.io.File;
 
 
 public class TicketController {
 
 
-    public ImageView barCodeImageView;
+    @FXML private ImageView barCodeImageView;
     @FXML private Label lblEventName;
-//    @FXML private Label lblCustomerName;
     @FXML private Label lblDate;
     @FXML private Label lblTime;
     @FXML private Label lblPrice;
@@ -46,6 +36,7 @@ public class TicketController {
     @FXML private AnchorPane ticketpane;
 
 
+
     @FXML
     public void initialize() {
 
@@ -54,7 +45,6 @@ public class TicketController {
     public void setTicketData(TicketOnOrder ticket, String qrFilePath, String barcodePath) {
 
         lblEventName.setText(ticket.getEventName());
-//        lblCustomerName.setText(ticket.getCustomerName());  Uncomment if adding the customer name is needed
 
         lblDate.setText(ticket.getEventDate());
         lblTime.setText(ticket.getEventTime());

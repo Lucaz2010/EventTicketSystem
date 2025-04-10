@@ -17,20 +17,32 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 
+
+/**
+ * Controller for the "Add Ticket" window.
+ * Allows the user to select an event, choose a ticket type, enter quantity,
+ * and create one or more tickets associated with a specific order.
+ */
+
 public class AddTicketController {
 
     @FXML private ComboBox<Event> comboEvent;
     @FXML private ComboBox<TicketType> comboTicketType;
     @FXML private TextField txtQuantity;
 
+
     private EventTicketSystemModel model;
     private int orderId;
     private OrderCardController parentController;
 
+    /**
+     * Sets the shared model instance and populates combo boxes.
+     */
+
     public void setModel(EventTicketSystemModel model) {
         this.model = model;
         loadTicketTypes();
-        /// Events are loaded in combo box here
+        // Events are loaded in combo box here
 
         try {
             comboEvent.setItems(model.getAllEvents());
@@ -38,19 +50,36 @@ public class AddTicketController {
             e.printStackTrace();
         }
 
-
-
     }
 
 
     public void setOrderId(int orderId) {
+
         this.orderId = orderId;
     }
+
+    /**
+     * Sets a reference to the parent controller to allow refreshing after ticket creation.
+     */
 
     public void setParentController(OrderCardController controller) {
         this.parentController = controller;
     }
 
+
+    /**
+     * Applies a custom display format for TicketType items in the combo box.
+     */
+
+    @FXML
+    public void initialize() {
+        formatTicketType();
+        formatEventName();
+
+    }
+
+
+    @FXML
     public void formatTicketType() {
 
         comboTicketType.setConverter(new StringConverter<TicketType>() {
@@ -68,7 +97,10 @@ public class AddTicketController {
         });
 
     }
-
+    /**
+     * Applies a custom display format for Event items in the combo box.
+     */
+    @FXML
     public void formatEventName() {
 
         comboEvent.setConverter(new StringConverter<Event>() {
@@ -86,13 +118,13 @@ public class AddTicketController {
     }
 
 
+
+
+    /**
+     * Loads all available ticket types into the combo box.
+     */
+
     @FXML
-    public void initialize() {
-        formatTicketType();
-        formatEventName();
-
-    }
-
     private void loadTicketTypes() {
         try {
             comboTicketType.setItems(model.getAllTicketTypes());
@@ -105,6 +137,10 @@ public class AddTicketController {
         loadTicketTypes();
     }
 
+    /**
+     * Opens the "Add New Ticket Type" window and links it to this controller.
+     */
+    @FXML
     public void onClickNewType(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/AddNewTicketType.fxml"));
@@ -118,6 +154,9 @@ public class AddTicketController {
             stage.setScene(new Scene(root));
             stage.setTitle("Create New Ticket Type");
             stage.show();
+
+            // When the window closes, check if a new ticket type was created and select it
+
             stage.setOnHiding(e -> {
                 TicketType newType = controller.getCreatedTicketType();
                 if (newType != null) {
@@ -130,6 +169,10 @@ public class AddTicketController {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Validates inputs, creates tickets, refreshes parent view, and closes the window.
+     */
 
     @FXML
     private void onClickSaveChanges(ActionEvent event) {
@@ -166,6 +209,8 @@ public class AddTicketController {
             if (parentController != null) {
                 parentController.refreshTickets(); // method used in OrderCardController
             }
+
+            // Close the window
 
             ((Stage) comboEvent.getScene().getWindow()).close();
 
