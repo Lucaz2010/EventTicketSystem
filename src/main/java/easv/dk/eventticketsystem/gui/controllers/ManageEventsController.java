@@ -2,6 +2,7 @@ package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
+import easv.dk.eventticketsystem.be.Users;
 import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController;
 
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
@@ -34,6 +35,7 @@ public class ManageEventsController implements Initializable {
 
     private ToolbarController toolbarController;
     private static final EventTicketSystemModel model = new EventTicketSystemModel();
+    private Users currentUser;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -58,20 +60,21 @@ public class ManageEventsController implements Initializable {
         List<Event> eventList = model.getAllEvents();
         for (Event event : eventList) {
             addEventCard(event);
-            }
+        }
     }
 
     // load a single user card.
     private void addEventCard(Event event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard.fxml"));
-        AnchorPane userCard = loader.load();
+        AnchorPane eventCard = loader.load();
         EventCardController cardController = loader.getController();
-        cardController.setParentController(this);
+
         cardController.setEventData(event);
-        eventCardPane.getChildren().add(userCard);
+        cardController.setAuthenticatedUser(currentUser);
+        eventCardPane.getChildren().add(eventCard);
     }
 
-//Opens window for create new event
+    //Opens window for create new event
     @FXML
     public void onClickAddEvent(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/easv/dk/eventticketsystem/CreateNewEventView.fxml"));
@@ -99,6 +102,22 @@ public class ManageEventsController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    public void onSortEvents(ActionEvent actionEvent) {
+    }
+
+    public void setCurrentUser(Users user) {
+        this.currentUser = user;
+
+        if ("Admin".equalsIgnoreCase(user.getRole().trim())) {
+            btnCreateNewEvent.setVisible(false);
+        } else {
+            btnCreateNewEvent.setVisible(true);
+        }
+        try {
+            loadAllEvents();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
-
-

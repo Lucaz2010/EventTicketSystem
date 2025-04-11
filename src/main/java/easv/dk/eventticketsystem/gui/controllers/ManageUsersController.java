@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -23,6 +24,8 @@ import java.util.ResourceBundle;
 
 public class ManageUsersController implements Initializable {
     @FXML
+    private Button btnCreateNewUser;
+    @FXML
     private FlowPane userCardPane;
     @FXML
     private BorderPane usersPane;
@@ -30,6 +33,7 @@ public class ManageUsersController implements Initializable {
     private AnchorPane toolbarContainer;
 
     private ToolbarController toolbarController;
+    private Users currentUser;
 
     private static final EventTicketSystemModel model = new EventTicketSystemModel();
     private List<Users> usersList;
@@ -53,26 +57,21 @@ public class ManageUsersController implements Initializable {
         }
     }
 
+    // Setter for currentUser; call this from your login code after authenticating the user.
+    public void setCurrentUser(Users user) {
+        this.currentUser = user;
+        String role = user.getRole(); // e.g. "Event Coordinator"
+        //System.out.println("User role: '" + role + "'");
+        if ("Event Coordinator".equalsIgnoreCase(user.getRole().trim())) {
+            btnCreateNewUser.setVisible(false);
+        } else {
+            btnCreateNewUser.setVisible(true);
+        }
+    }
+
     /// use for loop to add all users by cards.
     public void loadAllUsers() throws IOException {
         userCardPane.getChildren().clear();
-/*        List<Users> usersList = model.getAllUsers();
-        for (Users user : usersList) {
-            // Load the card component (UserCard.fxml) dynamically
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/UserCard.fxml"));
-            AnchorPane userCard = loader.load();
-            // Get the controller of the card and pass the user data
-            UserCardController cardController = loader.getController();
-            // Set the reference to the parent controller
-            cardController.setParentController(this);
-            cardController.setUserData(user);
-            // Add the card to the FlowPane
-            userCardPane.getChildren().add(userCard);
-            URL resource = getClass().getResource("/easv/dk/eventticketsystem/components/UserCard.fxml");
-            if (resource == null) {
-                System.err.println("UserCard.fxml resource not found!");
-            }
-        }*/
         // Load all users from the model and display them.
         List<Users> allUsers = model.getAllUsers();
         for (Users user : allUsers) {

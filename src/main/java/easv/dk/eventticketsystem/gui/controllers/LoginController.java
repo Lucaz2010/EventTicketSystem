@@ -1,7 +1,11 @@
 package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.MainApplication;
+import easv.dk.eventticketsystem.be.Users;
+import easv.dk.eventticketsystem.bll.UsersManager;
 import easv.dk.eventticketsystem.gui.util.AlertUtil;
+import easv.dk.eventticketsystem.security.PasswordUtil;
+import easv.dk.eventticketsystem.security.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +21,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -38,6 +43,7 @@ public class LoginController implements Initializable {
     private FontIcon eyeIcon;
 
     private boolean passwordVisible = false;
+    private List<Users> allUsers;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -45,16 +51,58 @@ public class LoginController implements Initializable {
 
     @FXML
     private void onLoginBtnClick(ActionEvent actionEvent) throws IOException {
-        String email = loginEmail.getText();
+        String email = loginEmail.getText().trim();
         String password = loginPassword.getText();
-        String userRole = authenticateUser(email, password);
 
-        if (isValidUser(email, password)) {
+        UsersManager usersManager = new UsersManager();
+        Users user = usersManager.getUserByEmail(email);
+        System.out.println("Retrieved user: " + user);
+
+        if (user != null && PasswordUtil.checkPassword(password, user.getPassword())) {
+            // Optionally print some debug information.
+            System.out.println("Stored hash: " + user.getPassword());
+            System.out.println("Password match: " + true);
+
+            // Set the user in the session.
+            UserSession.setCurrentUser(user);
+            String userRole = user.getRole();
+
+            // Close the login window.
             Stage currentStage = (Stage) btnLogin.getScene().getWindow();
             currentStage.close();
+
+            // Load the correct dashboard based on the user's role.
             loadDashboardView(userRole, email);
         } else {
+            // If user is null or password doesn't match.
+            System.out.println("Stored hash (if any): " + (user != null ? user.getPassword() : "null"));
+            System.out.println("Password match: " + false);
             AlertUtil.showErrorAlert("Login Failed", "Invalid email or password. Please try again.");
+        }
+    }
+
+    private void loadDashboardView(String role, String email) {
+        try {
+            FXMLLoader fxmlLoader;
+            // Choose FXML based on role—adjust file paths as needed.
+            if ("Admin".equalsIgnoreCase(role)) {
+                fxmlLoader = new FXMLLoader(MainApplication.class.getResource("DashboardView.fxml"));
+            } else if ("Coordinator".equalsIgnoreCase(role)) {
+                fxmlLoader = new FXMLLoader(MainApplication.class.getResource("DashboardView.fxml"));
+            } else {
+                // Fall back to a generic dashboard or display an error.
+                fxmlLoader = new FXMLLoader(MainApplication.class.getResource("DashboardView.fxml"));
+            }
+            Scene scene = new Scene(fxmlLoader.load());
+            // Optionally get and set user data in the dashboard controller:
+            // DashboardController controller = fxmlLoader.getController();
+            // controller.setUser(user);  // if you wish to pass the user object
+            Stage stage = new Stage();
+            stage.setTitle("Event Ticket System");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -74,20 +122,6 @@ public class LoginController implements Initializable {
         return null; // Invalid credentials
     }
 
-    private void loadDashboardView(String role, String email) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("DashboardView.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
-            DashboardController dboard = fxmlLoader.getController();
-            dboard.setParentController(this);
-            Stage stage = new Stage();
-            stage.setTitle("Event Ticket System");
-            stage.setScene(scene);
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void onTogglePasswordVisibility(ActionEvent actionEvent) {
         passwordVisible = !passwordVisible;
@@ -98,7 +132,7 @@ public class LoginController implements Initializable {
             visiblePassword.setManaged(true);
             loginPassword.setVisible(false);
             loginPassword.setManaged(false);
-            // Change icon to "eye-slash" if available (adjust literal if needed)
+            // Change icon to indicate visibility (for example, an "eye-slash")
             eyeIcon.setIconLiteral("bi-eye-slash");
         } else {
             // Hide plain text field, show PasswordField again
@@ -110,6 +144,6 @@ public class LoginController implements Initializable {
             // Change icon back to "eye"
             eyeIcon.setIconLiteral("bi-eye");
         }
-
     }
+
 }

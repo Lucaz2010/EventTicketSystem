@@ -32,4 +32,15 @@ public class UsersManager {
         List<Users> allUsers = usersDAO.getAllUsers();
         return userSearcher.searchUsers(allUsers, query);
     }
+    public Users getUserByEmail(String email) throws IOException {
+        List<Users> allUsers = usersDAO.getAllUsers();
+        for (Users user : allUsers) {
+            if (user.getUserEmail().equalsIgnoreCase(email)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+
 }

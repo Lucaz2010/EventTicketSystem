@@ -7,15 +7,24 @@ public class Users {
     private String role;
     private String userEmail;
     private String userPhone;
+    private String password;
 
-    public Users(int userId, String userName, String userImagePath, String role, String userEmail, String userPhone) {
-        this.userId = userId;
+    public Users(int userId, String userName, String userImagePath, String role, String userEmail, String userPhone, String password) {        this.userId = userId;
         this.userName = userName;
         this.userImagePath = userImagePath;
         this.role = role;
         this.userEmail = userEmail;
         this.userPhone = userPhone;
+        this.password = password;
     }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 
     public int getUserId() {
         return userId;
@@ -67,6 +76,6 @@ public class Users {
 
     @Override
     public String toString() {
-        return userName + ',' + role + ',' + userEmail + ',' + userImagePath + ',' + userPhone;}
+        return userName + ',' + role + ',' + userEmail + ',' + userImagePath + ',' + userPhone + ',' + password;}
 }
 

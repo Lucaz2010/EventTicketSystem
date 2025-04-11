@@ -12,28 +12,37 @@
 <BorderPane fx:id="dashboardPane" prefHeight="700" prefWidth="1200" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.DashboardController">
     <!-- Left Sidebar -->
     <left>
-        <fx:include source="components/Sidebar.fxml" />
+        <fx:include source="components/Sidebar.fxml" fx:id="sidebar"/>
     </left>
     <!-- Center region: contains the top bar and the main content -->
     <center>
         <VBox prefWidth="970.0" spacing="10.0">
-         <HBox alignment="CENTER">
-            <children>
-               <Label alignment="TOP_CENTER" contentDisplay="CENTER" text="Welcome to EASV Event Ticket System!" textAlignment="CENTER">
-                  <font>
-                     <Font name="Arial Unicode MS" size="34.0" />
-                  </font>
-               </Label>
-            </children>
-            <VBox.margin>
-               <Insets bottom="20.0" left="40.0" right="40.0" top="50.0" />
-            </VBox.margin>
-         </HBox>
+            <HBox alignment="CENTER">
+                <children>
+                    <VBox>
+                        <children>
+                            <Label fx:id="lblUserName" alignment="TOP_CENTER" contentDisplay="CENTER" prefHeight="49.0" prefWidth="608.0" text="HI" textAlignment="CENTER">
+                                <font>
+                                    <Font name="Arial Unicode MS" size="34.0" />
+                                </font>
+                            </Label>
+                            <Label alignment="TOP_CENTER" contentDisplay="CENTER" text="Welcome to EASV Event Ticket System!" textAlignment="CENTER">
+                                <font>
+                                    <Font name="Arial Unicode MS" size="34.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                </children>
+                <VBox.margin>
+                    <Insets bottom="20.0" left="40.0" right="40.0" top="50.0" />
+                </VBox.margin>
+            </HBox>
             <StackPane fx:id="carouselPane" prefHeight="400.0" prefWidth="808.0">
                 <ImageView fx:id="carouselImageView" fitHeight="400" fitWidth="600.0" preserveRatio="true" style="-fx-background-radius: 5; -fx-image-radius: 5; -fx-border-radius: 5;" />
-            <VBox.margin>
-               <Insets />
-            </VBox.margin>
+                <VBox.margin>
+                    <Insets />
+                </VBox.margin>
             </StackPane>
         </VBox>
     </center>

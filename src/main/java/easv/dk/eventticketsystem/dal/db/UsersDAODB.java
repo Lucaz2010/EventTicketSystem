@@ -29,13 +29,8 @@ public class UsersDAODB implements IUsersDAO {
                 String userEmail = rs.getString("user_email");
                 String userPhone = rs.getString("user_phone");
                 String userImagePath = rs.getString("user_image_path");
-/*                System.out.println("DEBUG: userId = " + userId
-                        + ", username = " + userName
-                        + ", role = " + role
-                        + ", email = " + userEmail
-                        + ", phone = " + userPhone
-                        + ", imagePath = " + userImagePath);*/
-                Users users = new Users(userId, userName, userImagePath, role, userEmail, userPhone);
+                String password = rs.getString("password");
+                Users users = new Users(userId, userName, userImagePath, role, userEmail, userPhone, password);
                 allUsers.add(users);
             }
         } catch (SQLServerException e) {
@@ -48,14 +43,14 @@ public class UsersDAODB implements IUsersDAO {
 
     @Override
     public void createNewUsers(Users users) throws IOException {
-        String sql = "INSERT INTO Users (user_name, user_image_path, role, user_email, user_phone) VALUES (?, ?, ?, ?, ?)";
-        try (Connection connection = con.getConnection();
+        String sql = "INSERT INTO Users (user_name, user_image_path, role, user_email, user_phone, password) VALUES (?, ?, ?, ?, ?, ?)";        try (Connection connection = con.getConnection();
         PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, users.getUserName());
             ps.setString(2, users.getUserImagePath());
             ps.setString(3, users.getRole());
             ps.setString(4, users.getUserEmail());
             ps.setString(5, users.getUserPhone());
+            ps.setString(6, users.getPassword());
             ps.executeUpdate();
         }catch (SQLException e) {
             throw new RuntimeException("Error adding users to the database: " + e.getMessage(), e);

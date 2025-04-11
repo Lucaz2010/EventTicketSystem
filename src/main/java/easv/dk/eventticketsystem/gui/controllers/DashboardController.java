@@ -1,6 +1,9 @@
 package easv.dk.eventticketsystem.gui.controllers;
 
 import easv.dk.eventticketsystem.MainApplication;
+import easv.dk.eventticketsystem.be.Users;
+import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
+import easv.dk.eventticketsystem.security.UserSession;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -29,6 +32,8 @@ import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
     @FXML
+    private Label lblUserName;
+    @FXML
     private StackPane carouselPane;
     @FXML
     private ImageView carouselImageView;
@@ -55,14 +60,23 @@ public class DashboardController implements Initializable {
     private String userEmail;
 
     private LoginController loginController;
+    @FXML
     private SidebarController sidebarController;
 
     private List<Image> eventImages = new ArrayList<>();
     private int currentIndex = 0;
+    private Users authenticatedUser;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadDashboardView();
+        Users loggedUser = UserSession.getCurrentUser();
+        if (loggedUser != null) {
+            lblUserName.setText("Hi, " + loggedUser.getUserName() + "!");
+            sidebarController.setAuthenticatedUser(loggedUser);
+        } else {
+            lblUserName.setText("Welcome, Guest!");
+        }
     }
 
     private void loadDashboardView() {
@@ -73,7 +87,7 @@ public class DashboardController implements Initializable {
 
         // Check that the list is not empty to avoid division by zero
         if (eventImages.isEmpty()) {
-            System.err.println("No event images loaded. Please check the resource paths.");
+//            System.err.println("No event images loaded. Please check the resource paths.");
             return;
         }
 
@@ -123,10 +137,19 @@ public class DashboardController implements Initializable {
         salesChart.getData().add(series);
     }*/
 
+
+    public void setAuthenticatedUser(Users user) {
+        this.authenticatedUser = user;
+        // Optionally, update dashboard UI based on the user (e.g., display name, photo, etc.)
+        setUserRole(user.getRole(), user.getUserEmail());
+        // Now that authenticatedUser is set, update the sidebar controller.
+        if (sidebarController != null) {
+            sidebarController.setAuthenticatedUser(user);
+        }
+    }
     public void setParentController(LoginController parentController) {
         this.loginController = parentController;
     }
-
     public void setUserRole(String role, String email) {
         this.userRole = role;
         this.userEmail = email;

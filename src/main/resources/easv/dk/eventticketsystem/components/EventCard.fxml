@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="eventPane" prefHeight="489.0" prefWidth="288.0" style="-fx-background-color: white; -fx-background-radius: 10;" styleClass="userCard" stylesheets="@../views/Style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController">
+<AnchorPane fx:id="eventPane" prefHeight="489.0" prefWidth="288.0" style="-fx-background-color: white; -fx-background-radius: 10;" styleClass="userCard" stylesheets="@../views/Style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController">
    <children>
       <ImageView fx:id="eventImage" fitHeight="192.0" fitWidth="288.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-radius: 10; -fx-image-radius: 10;">
          <image>
@@ -61,15 +61,16 @@
       </HBox>
 
       <!-- PRICE (Icon + Label) -->
-      <HBox layoutX="36.0" layoutY="394.0" prefHeight="47.0" prefWidth="206.0" spacing="5" AnchorPane.leftAnchor="37.0">
+      <HBox layoutX="37.0" layoutY="390.0" spacing="5" AnchorPane.leftAnchor="37.0">
          <FontIcon iconColor="#000000" iconLiteral="bi-cash" iconSize="16" text="" />
-         <Label fx:id="lblAssignedUser" text="Assigned:" wrapText="true">
+         <Label fx:id="lblAssignedUser" text="Assigned:">
             <font>
                <Font size="14.0" />
             </font>
          </Label>
-         <Label fx:id="lblPersonAssigned" alignment="TOP_LEFT" lineSpacing="5.0" prefHeight="43.0" prefWidth="121.0" wrapText="true" />
+         <Label fx:id="lblPersonAssigned" lineSpacing="5.0" />
       </HBox>
+      <Button fx:id="btnInformation" layoutX="35.0" layoutY="415.0" mnemonicParsing="false" style="-fx-text-fill: #bbbbbb; -fx-background-color: transparent;" text="Click here for more information..." />
 
       <!-- ACTION BUTTONS (Edit & Delete) -->
       <HBox layoutX="175.0" layoutY="441.0" spacing="10" AnchorPane.leftAnchor="175.0">

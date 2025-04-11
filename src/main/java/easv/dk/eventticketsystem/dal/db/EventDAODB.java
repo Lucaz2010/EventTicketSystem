@@ -96,7 +96,7 @@ public class EventDAODB implements IEventDAO {
             ps.setString(6, event.getEventImagePath());
             ps.setString(7, event.getAssignedUser());
             ps.setInt(8, event.getEventId());
-            ps.executeUpdate();
+//            ps.executeUpdate();
 
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated > 0) {

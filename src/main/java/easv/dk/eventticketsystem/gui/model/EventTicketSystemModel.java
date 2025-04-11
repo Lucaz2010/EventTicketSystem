@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -141,7 +142,18 @@ public class EventTicketSystemModel {
         allUsers.setAll(usersList);
         return allUsers;
     }
+    public List<Users> getAllCoordinators() throws IOException {
 
+        List<Users> allUsers = getAllUsers();
+        List<Users> coordinators = new ArrayList<>();
+        for (Users u : allUsers) {
+            if ("Coordinator".equalsIgnoreCase(u.getRole().trim()) ||
+                    "Event Coordinator".equalsIgnoreCase(u.getRole().trim())) {
+                coordinators.add(u);
+            }
+        }
+        return coordinators;
+    }
     public void createNewUsers(Users users) throws IOException {
         usersManager.createNewUsers(users);
     }
