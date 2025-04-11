@@ -16,11 +16,12 @@
                     <Insets left="20.0" />
                 </HBox.margin>
             </TextField>
-            <Pane prefHeight="26.0" prefWidth="320.0" HBox.hgrow="ALWAYS">
-                <children>
-                    <Label fx:id="lblUserName" layoutX="307.0" layoutY="5.0" text="Hello! Admin" />
-                </children>
-            </Pane>
+            <Pane prefHeight="26.0" prefWidth="320.0" HBox.hgrow="ALWAYS" />
+         <Label fx:id="lblUserName" prefHeight="17.0" prefWidth="104.0" text="Label">
+            <HBox.margin>
+               <Insets right="25.0" />
+            </HBox.margin>
+         </Label>
         </HBox>
     </children>
 </AnchorPane>

@@ -170,4 +170,16 @@ public class EventTicketSystemModel {
         searchedEvent.setAll(searchResults);
         return searchedEvent;
     }
+
+    public List<Users> getAllCoordinators() throws IOException {
+        List<Users> allUsers = getAllUsers();
+        List<Users> coordinators = new ArrayList<>();
+        for (Users u : allUsers) {
+            if ("Coordinator".equalsIgnoreCase(u.getRole().trim()) ||
+                    "Event Coordinator".equalsIgnoreCase(u.getRole().trim())) {
+                coordinators.add(u);
+            }
+        }
+        return coordinators;
+    }
 }

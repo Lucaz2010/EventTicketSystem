@@ -2,11 +2,12 @@ package easv.dk.eventticketsystem.gui.controllers.componentsControllers;
 
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
-import easv.dk.eventticketsystem.gui.controllers.ManageEditWindow;
-import easv.dk.eventticketsystem.gui.controllers.ManageEventsController2;
-import easv.dk.eventticketsystem.gui.controllers.ManageUsersController;
+import easv.dk.eventticketsystem.be.Users;
+import easv.dk.eventticketsystem.gui.controllers.ManageEventsController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import easv.dk.eventticketsystem.gui.util.AlertUtil;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,18 +18,23 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.controlsfx.control.CheckComboBox;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EventCard2Controller {
-    public AnchorPane eventPane;
+public class EventCardController {
+    @FXML
+    private Label lblAssignedUser;
+    @FXML
+    private AnchorPane eventPane;
+    @FXML
+    private Button btnEditEvent;
     @FXML
     private ImageView eventImage;
     @FXML
@@ -54,7 +60,7 @@ public class EventCard2Controller {
 
     private final EventTicketSystemModel model = new EventTicketSystemModel();
 
-    private ManageEventsController2  manageEventsController;
+    private ManageEventsController manageEventsController;
 
     public void setEventData(Event event) {
         this.event = event;
@@ -101,7 +107,7 @@ public class EventCard2Controller {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("EditEventView.fxml"));
             Parent root = fxmlLoader.load();
 
-            EditWindowController editWindowController =  fxmlLoader.getController();
+            EditWindowController editWindowController = fxmlLoader.getController();
             if (editWindowController == null) {
                 System.out.println("DEBUG: EditWindowController is NULL");
                 return;
@@ -125,7 +131,7 @@ public class EventCard2Controller {
         }
     }
 
-    public void onClickDelete(ActionEvent actionEvent)throws IOException {
+    public void onClickDelete(ActionEvent actionEvent) throws IOException {
         boolean confirmed = AlertUtil.showConfirmationAlert("Delete Event Confirmation",
                 "Are you sure you want to delete this event?");
         if (confirmed) {
@@ -143,9 +149,9 @@ public class EventCard2Controller {
         }
     }
 
-    public void setParentController(ManageEventsController2 manageEventsController) {
+    public void setParentController(ManageEventsController manageEventsController) {
         this.manageEventsController = manageEventsController;
-       // System.out.println("Parent controller set to " + this.manageEventsController);
+        // System.out.println("Parent controller set to " + this.manageEventsController);
     }
 
     public void refreshEventData(Event currentEvent) {
@@ -174,4 +180,112 @@ public class EventCard2Controller {
         }
         System.out.println("DEBUG: UI Updated with new event details: " + currentEvent.getEventName());
     }
+
+    public void setAuthenticatedUser(Users user) {
+        if (user != null && "Admin".equalsIgnoreCase(user.getRole().trim())) {
+            btnEditEvent.setVisible(false);
+            lblAssignedUser.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2) {
+                    replaceLabelWithCheckCombo();
+                }
+            });
+        } else {
+            lblAssignedUser.setOnMouseClicked(null);
+            btnEditEvent.setVisible(true);
+        }
+
+    }
+
+    private void replaceLabelWithCheckCombo() {
+        // Retrieve coordinator names from model (as in your current code)
+        EventTicketSystemModel model = new EventTicketSystemModel();
+        List<Users> coordinatorList;
+        try {
+            coordinatorList = model.getAllCoordinators();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            coordinatorList = new ArrayList<>();
+        }
+
+        ObservableList<String> coordinatorNames = FXCollections.observableArrayList();
+        for (Users coord : coordinatorList) {
+            coordinatorNames.add(coord.getUserName());
+        }
+
+        CheckComboBox<String> checkComboBox = new CheckComboBox<>(coordinatorNames);
+
+        String currentText = lblAssignedUser.getText();
+        if (currentText != null && !currentText.isEmpty()) {
+            String[] selections = currentText.split(",\\s*");
+            for (String sel : selections) {
+                if (coordinatorNames.contains(sel)) {
+                    checkComboBox.getCheckModel().check(sel);
+                }
+            }
+        }
+
+        // Get the parent container (cast as Pane)
+        Pane parent = (Pane) lblAssignedUser.getParent();
+        int index = parent.getChildren().indexOf(lblAssignedUser);
+
+        checkComboBox.setLayoutX(lblAssignedUser.getLayoutX());
+        checkComboBox.setLayoutY(lblAssignedUser.getLayoutY());
+        checkComboBox.setPrefWidth(lblAssignedUser.getWidth());
+        checkComboBox.setPrefHeight(lblAssignedUser.getHeight());
+
+        // Remove the label and add the CheckComboBox.
+        parent.getChildren().remove(lblAssignedUser);
+        parent.getChildren().add(index, checkComboBox);
+
+        // Create a Save button
+        Button btnSave = new Button("Save");
+        // Optionally, style and position the button appropriately
+        btnSave.setLayoutX(checkComboBox.getLayoutX() + checkComboBox.getPrefWidth() + 5);
+        btnSave.setLayoutY(checkComboBox.getLayoutY());
+
+        // Add the button to the parent container.
+        parent.getChildren().add(btnSave);
+
+        btnSave.setOnAction(evt -> {
+            // Get the selected items.
+            String selectedValues = String.join(", ", checkComboBox.getCheckModel().getCheckedItems());
+            System.out.println("Save clicked. Selected coordinator(s): " + selectedValues);
+
+            // Update the Event object.
+            if (currentEvent != null) {
+                currentEvent.setAssignedUser(selectedValues);
+                try {
+                    model.updateEvent(currentEvent);
+                    System.out.println("Database updated for event: " + currentEvent.getEventName());
+                    // Now refresh the Manage Events view:
+                    if (manageEventsController != null) {
+                        manageEventsController.loadAllEvents();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    AlertUtil.showErrorAlert("Error", "Failed to update assigned coordinators.");
+                }
+            }
+
+            // Create a new Label with these selections.
+            Label newLabel = new Label(selectedValues);
+            newLabel.setLayoutX(checkComboBox.getLayoutX());
+            newLabel.setLayoutY(checkComboBox.getLayoutY());
+            newLabel.setPrefWidth(checkComboBox.getPrefWidth());
+            newLabel.setPrefHeight(checkComboBox.getPrefHeight());
+            newLabel.setOnMouseClicked(event2 -> {
+                if (event2.getClickCount() == 2) {
+                    replaceLabelWithCheckCombo();
+                }
+            });
+
+            // Replace the CheckComboBox and the Save button with the new Label.
+            parent.getChildren().set(index, newLabel); // Using set() to replace the node.
+        });
+
+
+    }
+
+
+
 }

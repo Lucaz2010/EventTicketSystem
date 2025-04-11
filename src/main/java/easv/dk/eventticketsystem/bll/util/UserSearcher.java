@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserSearcher {
-
     public List<Users> searchUsers(List<Users> searchBase, String query) {
         List<Users> searchResult = new ArrayList<>();
         for (Users users : searchBase) {

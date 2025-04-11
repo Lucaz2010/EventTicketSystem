@@ -9,7 +9,10 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<BorderPane fx:id="eventPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.ManageEventsController2">
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<BorderPane fx:id="eventPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.ManageEventsController">
     <!-- Left Sidebar -->
     <left>
         <fx:include source="components/Sidebar.fxml" />

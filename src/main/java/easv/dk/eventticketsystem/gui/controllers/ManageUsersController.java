@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -23,6 +24,8 @@ import java.util.ResourceBundle;
 
 public class ManageUsersController implements Initializable {
     @FXML
+    private Button btnCreateNewUser;
+    @FXML
     private FlowPane userCardPane;
     @FXML
     private BorderPane usersPane;
@@ -30,6 +33,7 @@ public class ManageUsersController implements Initializable {
     private AnchorPane toolbarContainer;
 
     private ToolbarController toolbarController;
+    private Users currentUser;
 
     private static final EventTicketSystemModel model = new EventTicketSystemModel();
     private List<Users> usersList;
@@ -50,6 +54,18 @@ public class ManageUsersController implements Initializable {
             loadAllUsers();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // Setter for currentUser; call this from your login code after authenticating the user.
+    public void setCurrentUser(Users user) {
+        this.currentUser = user;
+        String role = user.getRole(); // e.g. "Event Coordinator"
+        //System.out.println("User role: '" + role + "'");
+        if ("Event Coordinator".equalsIgnoreCase(user.getRole().trim())) {
+            btnCreateNewUser.setVisible(false);
+        } else {
+            btnCreateNewUser.setVisible(true);
         }
     }
 

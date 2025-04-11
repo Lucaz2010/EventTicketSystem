@@ -3,17 +3,14 @@ package easv.dk.eventticketsystem.gui.controllers;
 import easv.dk.eventticketsystem.MainApplication;
 import easv.dk.eventticketsystem.be.Event;
 import easv.dk.eventticketsystem.be.Users;
-import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCard2Controller;
-import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EditWindowController;
+import easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController;
 
-import easv.dk.eventticketsystem.gui.controllers.componentsControllers.UserCardController;
 import easv.dk.eventticketsystem.gui.model.EventTicketSystemModel;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -26,7 +23,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ManageEventsController2 implements Initializable {
+public class ManageEventsController implements Initializable {
     @FXML
     private Button btnCreateNewEvent;
     @FXML
@@ -38,6 +35,7 @@ public class ManageEventsController2 implements Initializable {
 
     private ToolbarController toolbarController;
     private static final EventTicketSystemModel model = new EventTicketSystemModel();
+    private Users currentUser;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,12 +65,13 @@ public class ManageEventsController2 implements Initializable {
 
     // load a single user card.
     private void addEventCard(Event event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard2.fxml"));
-        AnchorPane userCard = loader.load();
-        EventCard2Controller cardController = loader.getController();
-        cardController.setParentController(this);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/easv/dk/eventticketsystem/components/EventCard.fxml"));
+        AnchorPane eventCard = loader.load();
+        EventCardController cardController = loader.getController();
+
         cardController.setEventData(event);
-        eventCardPane.getChildren().add(userCard);
+        cardController.setAuthenticatedUser(currentUser);
+        eventCardPane.getChildren().add(eventCard);
     }
 
 //Opens window for create new event
@@ -99,6 +98,24 @@ public class ManageEventsController2 implements Initializable {
             for (Event event : searchedEvent) {
                 addEventCard(event);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onSortEvents(ActionEvent actionEvent) {
+    }
+
+    public void setCurrentUser(Users user) {
+        this.currentUser = user;
+
+        if ("Admin".equalsIgnoreCase(user.getRole().trim())) {
+            btnCreateNewEvent.setVisible(false);
+        } else {
+            btnCreateNewEvent.setVisible(true);
+        }
+        try {
+            loadAllEvents();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="eventPane" prefHeight="489.0" prefWidth="288.0" style="-fx-background-color: white; -fx-background-radius: 10;" styleClass="userCard" stylesheets="@../views/Style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCard2Controller">
+<AnchorPane fx:id="eventPane" prefHeight="489.0" prefWidth="288.0" style="-fx-background-color: white; -fx-background-radius: 10;" styleClass="userCard" stylesheets="@../views/Style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="easv.dk.eventticketsystem.gui.controllers.componentsControllers.EventCardController">
    <children>
       <ImageView fx:id="eventImage" fitHeight="192.0" fitWidth="288.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-radius: 10; -fx-image-radius: 10;">
          <image>

@@ -66,20 +66,18 @@ public class UserCardController {
             // First try loading as a classpath resource.
             InputStream is = getClass().getResourceAsStream(imagePath);
             if (is != null) {
-                System.out.println("DEBUG: Loaded image from classpath resource: " + imagePath);
                 avatar.setImage(new Image(is));
             } else {
-                // Fallback: load from file system.
-                System.out.println("DEBUG: Resource not found in classpath: " + imagePath);
+
                 String workingDir = System.getProperty("user.dir");
-                System.out.println("DEBUG: Working directory: " + workingDir);
+
 
                 // Use the File constructor that takes a parent directory and a child path.
                 File imageFile = new File(workingDir, imagePath);
-                System.out.println("DEBUG: Constructed absolute image path: " + imageFile.getAbsolutePath());
+
 
                 if (imageFile.exists()) {
-                    System.out.println("DEBUG: Found file on disk: " + imageFile.getAbsolutePath());
+
                     avatar.setImage(new Image(imageFile.toURI().toString()));
                 } else {
                     System.err.println("DEBUG: File not found on disk: " + imageFile.getAbsolutePath());

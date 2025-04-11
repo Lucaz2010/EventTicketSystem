@@ -96,7 +96,8 @@ public class UserEditorController implements Initializable {
             System.out.println("Creating a new user.");
             // Use the provided image path if available, otherwise set it to empty or a default placeholder
             String finalImgPath = (userImagePath != null && !userImagePath.isEmpty()) ? userImagePath : "";
-            Users newUser = new Users(0, userName, finalImgPath, role, email, phone);
+            String defaultPassword = "";
+            Users newUser = new Users(0, userName, finalImgPath, role, email, phone,defaultPassword);
             model.createNewUsers(newUser);
         }
 
