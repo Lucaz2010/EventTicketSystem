@@ -38,7 +38,12 @@ public class SidebarController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        Users user = UserSession.getCurrentUser();
+        if (user != null && "Admin".equalsIgnoreCase(user.getRole().trim())) {
+            btnManageOrders.setVisible(false);
+        } else {
+            btnManageOrders.setVisible(true);
+        }
     }
 
     public void setAuthenticatedUser(Users user) {
