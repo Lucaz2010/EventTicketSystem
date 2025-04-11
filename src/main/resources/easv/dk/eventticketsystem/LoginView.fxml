@@ -31,7 +31,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField id="loginEmail" fx:id="loginEmail" opacity="0.7" prefHeight="26.0" prefWidth="376.0" style="-fx-background-color: black; -fx-border-color: white; -fx-border-radius: 5;" stylesheets="@views/Style.css" text="admin@gmail.com">
+            <TextField id="loginEmail" fx:id="loginEmail" opacity="0.7" prefHeight="26.0" prefWidth="376.0" style="-fx-background-color: black; -fx-border-color: white; -fx-border-radius: 5;" stylesheets="@views/Style.css">
                <VBox.margin>
                   <Insets left="20.0" right="20.0" top="8.0" />
                </VBox.margin>
@@ -54,15 +54,13 @@
             <!-- StackPane to overlay the toggle button on the password field -->
             <StackPane maxWidth="376.0" prefHeight="26.0" style="-fx-background-color: transparent;">
                <!-- PasswordField -->
-               <PasswordField fx:id="loginPassword" opacity="0.7" prefHeight="26.0" prefWidth="376.0" style="-fx-background-color: black; -fx-border-color: white; -fx-border-radius: 5;" stylesheets="@views/Style.css" text="123456">
+               <PasswordField fx:id="loginPassword" opacity="0.7" prefHeight="26.0" prefWidth="376.0" style="-fx-background-color: black; -fx-border-color: white; -fx-border-radius: 5;" stylesheets="@views/Style.css">
                   <StackPane.margin>
                      <Insets left="20.0" right="20.0" top="8.0" />
                   </StackPane.margin>
                </PasswordField>
                <!-- TextField (visible) initially hidden -->
-               <TextField fx:id="visiblePassword" opacity="0.7" prefHeight="26.0" prefWidth="376.0"
-                          style="-fx-background-color: black; -fx-border-color: white; -fx-border-radius: 5; -fx-text-fill: white;"
-                          stylesheets="@views/Style.css" text="123456" visible="false" managed="false">
+               <TextField fx:id="visiblePassword" managed="false" opacity="0.7" prefHeight="26.0" prefWidth="376.0" style="-fx-background-color: black; -fx-border-color: white; -fx-border-radius: 5; -fx-text-fill: white;" stylesheets="@views/Style.css" text="123456" visible="false">
                   <StackPane.margin>
                      <Insets left="20.0" right="20.0" top="8.0" />
                   </StackPane.margin>
@@ -87,7 +85,7 @@
                   <Font size="17.0" />
                </font>
             </Button>
-            <Label alignment="CENTER_RIGHT" maxWidth="Infinity" prefHeight="18.0" prefWidth="350.0" text="Did you forget your password?" textFill="WHITE">
+            <Label alignment="CENTER_RIGHT" maxWidth="Infinity" prefHeight="18.0" prefWidth="350.0" textFill="WHITE">
                <VBox.margin>
                   <Insets left="20.0" right="20.0" top="15.0" />
                </VBox.margin>
