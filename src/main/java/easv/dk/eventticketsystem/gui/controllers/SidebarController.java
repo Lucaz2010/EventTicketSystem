@@ -71,23 +71,12 @@ public class SidebarController implements Initializable {
         loginStage.show();
     }
 
-    public void onManageTicketsClick(ActionEvent actionEvent) throws IOException {
-        Stage currentStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-        currentStage.close();
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("ManageTicketsView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage loginStage = new Stage();
-        loginStage.setTitle("Tickets Management");
-        loginStage.setScene(scene);
-        loginStage.show();
-    }
+
 
     public void onLogout(ActionEvent actionEvent) throws IOException {
         Stage stage = (Stage) btnLogout.getScene().getWindow();
         stage.close();
     }
 
-    public void onManageCustomersClick(ActionEvent actionEvent) {
 
-    }
 }
